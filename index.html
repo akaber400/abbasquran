@@ -132,17 +132,24 @@ font-size:0.5938rem;font-weight:500;flex:1;text-align:center;user-select:none}
 justify-content:center;z-index:400;padding:0.75rem}
 .mb.show{display:flex}
 .mo{background:#fff;border-radius:0.75rem;padding:1rem;max-width:53.125rem;width:100%;max-height:90vh;
-overflow-y:auto;box-shadow:0 1.25rem 3.75rem rgba(0,0,0,.4);position:relative}
+overflow:auto;box-shadow:0 1.25rem 3.75rem rgba(0,0,0,.4);position:relative;resize:both;
+min-width:min(20rem,90vw);min-height:10rem}
 .mo h3{font-size:1rem;margin-bottom:0.5rem}
 .mx{position:absolute;top:0.375rem;left:0.5rem;background:none;border:none;font-size:1.25rem;cursor:pointer;color:var(--muted)}
 .sb{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:150}
 .sb.show{display:block}
-.sh{position:fixed;top:0;left:0;bottom:0;width:min(53.125rem,96vw);background:var(--bg);z-index:200;
-transform:translateX(-100%);transition:.3s;overflow-y:auto;box-shadow:0.375rem 0 1.875rem rgba(0,0,0,.25)}
+.sh{position:fixed;top:0;left:0;bottom:0;width:min(53.125rem,96vw);height:100vh;max-height:100vh;max-width:96vw;
+background:var(--bg);z-index:200;transform:translateX(-100%);transition:transform .3s;overflow-y:auto;overflow-x:hidden;
+box-shadow:0.375rem 0 1.875rem rgba(0,0,0,.25);resize:both;min-width:18rem;min-height:14rem}
 .sh.show{transform:translateX(0)}
 .shh{background:linear-gradient(135deg,var(--green),var(--green-l));color:#fff;padding:0.625rem 1rem;
 position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;
-border-bottom:0.1875rem solid var(--gold)}
+border-bottom:0.1875rem solid var(--gold);cursor:move;user-select:none}
+.sh-title{display:flex;align-items:center;gap:.55rem;min-width:0}
+.sh-grip{display:inline-flex;align-items:center;justify-content:center;width:1.55rem;height:1.55rem;
+border-radius:.4rem;background:rgba(255,255,255,.14);font-size:.95rem;flex:none;cursor:move}
+.shh .x{cursor:pointer}
+.sh.sheet-dragging{transition:none!important;box-shadow:0 .8rem 2.5rem rgba(0,0,0,.4)!important}
 .shh h3{color:#fff;font-size:1rem;margin:0;font-family:'Amiri'}
 .shh .x{background:rgba(255,255,255,.15);color:#fff;border:none;width:1.75rem;height:1.75rem;border-radius:50%;cursor:pointer;font-size:1rem}
 .shb{padding:0.75rem 1rem}
@@ -380,6 +387,186 @@ pre.st-sql{direction:ltr;text-align:left;background:#10231C;color:#CFE8DC;paddin
 background:linear-gradient(160deg,var(--deep),var(--deep2));padding:.6rem;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .qp-x{position:absolute;top:.4rem;left:.6rem;z-index:3;background:rgba(255,255,255,.15);color:#fff;border:none;width:2rem;height:2rem;border-radius:50%;font-size:1.2rem;cursor:pointer}
 .qp-modal-in .quran-player{margin:0;border:none;box-shadow:none;padding-top:2.2rem}
+
+/* ================= تحسين ترتيب التبويبات وبطاقات اللوحات ================= */
+.tabs{gap:.45rem;padding:.55rem 1.125rem;flex-wrap:wrap;overflow:visible;align-items:center}
+.tab{display:inline-flex;align-items:center;gap:.4rem;padding:.42rem .8rem;border-radius:999px;
+  border:1px solid var(--border);background:#fff;font-size:.78rem;line-height:1.1;border-bottom-width:1px}
+.tab .ti{display:inline-flex;align-items:center;justify-content:center;width:1.55rem;height:1.55rem;
+  border-radius:50%;background:#F1EEE4;color:var(--green);font-size:.9rem;line-height:1;flex:none}
+.tab .tt{white-space:nowrap}
+.tab:hover{background:#fff;border-color:var(--gold);color:var(--green)}
+.tab.active{background:linear-gradient(135deg,var(--green),var(--green-l));border-color:var(--green);color:#fff;
+  box-shadow:0 .3rem .7rem rgba(27,77,62,.25)}
+.tab.active .ti{background:rgba(255,255,255,.18);color:#fff}
+@media(max-width:700px){
+  .tabs{flex-wrap:nowrap;overflow-x:auto;padding:.45rem .6rem}
+  .tab{flex:none;padding:.35rem .6rem;font-size:.72rem}
+  .tab .ti{width:1.4rem;height:1.4rem;font-size:.8rem}
+}
+
+.kg{grid-template-columns:repeat(auto-fill,minmax(8rem,1fr));gap:.7rem;justify-content:stretch;margin-bottom:1rem}
+.kpi{aspect-ratio:auto;min-height:7.8rem;border-radius:1rem;padding:.7rem .6rem;gap:.4rem;justify-content:center}
+.kpi .ki{border-radius:50%;box-shadow:0 .25rem .6rem rgba(0,0,0,.08)}
+.kpi .kv{display:flex;flex-direction:column;align-items:center;gap:.1rem;min-width:0}
+.kpi .kn{font-size:1.65rem;line-height:1.1}
+.kpi .kl{font-size:.75rem;font-weight:600;margin-top:.15rem}
+@media(max-width:560px){
+  .kg{grid-template-columns:repeat(auto-fill,minmax(6.8rem,1fr));gap:.5rem}
+  .kpi{min-height:6.9rem;padding:.55rem .45rem}
+  .kpi .kn{font-size:1.35rem}
+  .kpi .kl{font-size:.68rem}
+}
+
+/* ================= مجموعات الطلاب حسب الحلقة ================= */
+.cgroup{background:#fff;border:1px solid var(--border);border-radius:.85rem;margin-bottom:.55rem;overflow:hidden;
+  box-shadow:0 .15rem .6rem rgba(27,77,62,.06)}
+.cgroup>summary{display:flex;align-items:center;gap:.55rem;padding:.6rem .85rem;cursor:pointer;list-style:none;
+  font-weight:700;color:var(--green);background:linear-gradient(90deg,#fff,#FAF8F2);font-size:.8rem}
+.cgroup>summary::-webkit-details-marker{display:none}
+.cgroup>summary .cico{width:2rem;height:2rem;border-radius:50%;background:#E6F2EE;display:flex;align-items:center;
+  justify-content:center;flex:none;font-size:1rem}
+.cgroup>summary .ct{flex:1;min-width:0}
+.cgroup>summary .ct small{display:block;font-weight:400;color:var(--muted);font-size:.62rem;margin-top:1px}
+.cgroup>summary .csum{display:flex;gap:.3rem;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+.cgroup>summary .arrow{transition:.2s;color:var(--muted);font-size:.8rem}
+.cgroup[open]>summary{background:#F0F7F4;border-bottom:1px solid var(--border)}
+.cgroup[open]>summary .arrow{transform:rotate(180deg)}
+.cgroup .cgb{padding:.55rem .6rem .65rem;overflow-x:auto}
+.cgroup .cgb table{margin-top:0}
+.abs-chip{display:inline-flex;align-items:center;gap:.2rem;padding:.15rem .45rem;border-radius:.55rem;
+  background:#FBE9E9;color:#B23A3A;font-weight:700;font-size:.62rem;white-space:nowrap}
+.abs-chip.ok{background:#E6F2EE;color:var(--green)}
+.btn.promote{background:linear-gradient(135deg,var(--green-l),var(--green));color:#fff}
+.promo-note{background:#FBF3DD;border-right:.2rem solid var(--gold);border-radius:.45rem;padding:.45rem .6rem;
+  font-size:.7rem;line-height:1.7;color:#6b5510;margin-bottom:.6rem}
+
+/* ================= شريط الإحصائيات المضغوط ================= */
+.kg{display:flex!important;flex-wrap:nowrap!important;gap:.35rem!important;overflow-x:auto;overflow-y:hidden;
+  padding:.05rem 0 .3rem!important;margin-bottom:.7rem!important;scrollbar-width:thin}
+.kg::-webkit-scrollbar{height:5px}
+.kg::-webkit-scrollbar-thumb{background:#d8d2c2;border-radius:9px}
+.kpi{flex:1 1 0!important;min-width:4.9rem;max-width:none!important;aspect-ratio:auto!important;min-height:0!important;
+  flex-direction:row!important;justify-content:flex-start!important;align-items:center!important;text-align:right!important;
+  gap:.32rem!important;padding:.32rem .42rem!important;border-radius:.6rem!important;overflow:hidden}
+.kpi>div:last-child{display:block!important}
+.kpi .ki{width:1.45rem!important;height:1.45rem!important;font-size:.78rem!important;border-radius:50%!important;flex:none;
+  box-shadow:none!important}
+.kpi .kv{display:flex!important;flex-direction:column!important;align-items:flex-start!important;min-width:0!important;gap:0!important}
+.kpi .kn{font-size:.95rem!important;line-height:1.05!important;white-space:nowrap}
+.kpi .kl{font-size:.55rem!important;margin-top:.05rem!important;font-weight:600!important;line-height:1.1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+@media(max-width:560px){
+  .kg{gap:.25rem!important}
+  .kpi{min-width:4.2rem;padding:.28rem .32rem!important;gap:.25rem!important}
+  .kpi .ki{width:1.15rem!important;height:1.15rem!important;font-size:.64rem!important}
+  .kpi .kn{font-size:.8rem!important}
+  .kpi .kl{font-size:.48rem!important}
+}
+/* التبويبات في صف واحد دائمًا */
+.tabs{flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden!important;gap:.28rem!important;
+  padding:.38rem .7rem!important;scrollbar-width:thin}
+.tabs::-webkit-scrollbar{height:5px}
+.tabs::-webkit-scrollbar-thumb{background:#d8d2c2;border-radius:9px}
+.tab{padding:.28rem .52rem!important;font-size:.69rem!important;gap:.28rem!important}
+.tab .ti{width:1.25rem!important;height:1.25rem!important;font-size:.7rem!important}
+.tab .tt{font-size:.69rem!important}
+@media(max-width:700px){
+  .tabs{padding:.32rem .5rem!important}
+  .tab{padding:.25rem .42rem!important;font-size:.64rem!important}
+  .tab .ti{width:1.1rem!important;height:1.1rem!important;font-size:.62rem!important}
+  .tab .tt{font-size:.64rem!important}
+}
+
+/* ================= خيارات الطباعة ================= */
+.po-hint{font-size:.7rem;color:var(--muted);margin-bottom:.55rem;line-height:1.7}
+.po-sec{border:1px solid var(--border);border-radius:.6rem;padding:.5rem .6rem;margin-bottom:.5rem;background:#FAF8F3}
+.po-sec>b{display:block;font-size:.72rem;color:var(--green);margin-bottom:.35rem}
+.po-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.2rem,1fr));gap:.3rem .5rem}
+.po-item{display:flex;align-items:center;gap:.35rem;font-size:.69rem;color:#333;margin:0;cursor:pointer;
+  background:#fff;border:1px solid var(--border);border-radius:.4rem;padding:.3rem .45rem;font-weight:500}
+.po-item input{width:auto;margin:0;accent-color:var(--green);flex:none}
+.po-item:hover{border-color:var(--gold)}
+.po-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.65rem}
+
+/* ================= الروابط السريعة للمدرس ================= */
+.quick-links{display:flex;gap:.5rem;flex-wrap:wrap}
+.qlink{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem .8rem;border-radius:.65rem;text-decoration:none;
+  font-size:.74rem;font-weight:700;color:#fff;transition:.15s;box-shadow:0 .2rem .6rem rgba(0,0,0,.12)}
+.qlink:hover{transform:translateY(-2px);filter:brightness(1.07)}
+.qlink.teams{background:linear-gradient(135deg,#4B53BC,#5B5FC7)}
+.qlink.site{background:linear-gradient(135deg,#1A73E8,#2B8CFF)}
+
+/* ================= تحريك النوافذ المنبثقة ================= */
+.drag-handle{position:absolute;top:.35rem;left:2.35rem;width:1.45rem;height:1.45rem;border-radius:50%;
+  background:#F1EEE4;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:move;
+  font-size:.9rem;line-height:1;user-select:none;touch-action:none;z-index:4;border:1px solid var(--border)}
+.drag-handle:hover{background:var(--gold);color:#fff;border-color:var(--gold)}
+.mo.dragging{box-shadow:0 1.5rem 4rem rgba(0,0,0,.5)!important;transition:none!important}
+
+/* ================= الدردشة ================= */
+.chat-wrap{display:grid;grid-template-columns:16rem 1fr;gap:.6rem;min-height:60vh}
+.chat-side{background:#fff;border:1px solid var(--border);border-radius:.8rem;overflow:hidden;display:flex;flex-direction:column}
+.chat-search{padding:.5rem;border-bottom:1px solid var(--border);background:#FAF8F3}
+.chat-search input{margin:0;font-size:.7rem;padding:.35rem .5rem}
+.chat-list{overflow-y:auto;max-height:62vh}
+.chat-group-title{font-size:.55rem;font-weight:700;color:var(--muted);padding:.45rem .6rem .2rem;background:#FAF8F3;
+  border-bottom:1px solid var(--border)}
+.chat-item{display:flex;gap:.5rem;align-items:center;padding:.48rem .55rem;cursor:pointer;border-bottom:1px solid var(--border)}
+.chat-item:hover,.chat-item.active{background:#F0F7F4}
+.chat-av{width:2rem;height:2rem;border-radius:50%;background:#E6F2EE;color:var(--green);display:flex;align-items:center;
+  justify-content:center;font-weight:700;flex:none;position:relative;font-size:.85rem}
+.chat-av .on{position:absolute;bottom:-1px;left:-1px;width:.62rem;height:.62rem;border-radius:50%;background:#2FA36B;
+  border:2px solid #fff}
+.chat-nm{font-size:.71rem;font-weight:700;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-sub{font-size:.57rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:10rem}
+.chat-badge{margin-inline-start:auto;background:var(--absent);color:#fff;border-radius:999px;font-size:.55rem;
+  padding:.08rem .35rem;font-weight:700;flex:none}
+.chat-main{background:#fff;border:1px solid var(--border);border-radius:.8rem;display:flex;flex-direction:column;
+  overflow:hidden;min-height:60vh}
+.chat-head{padding:.55rem .7rem;border-bottom:1px solid var(--border);background:#FAF8F3;display:flex;gap:.45rem;
+  align-items:center;min-height:2.9rem}
+.chat-head .chat-nm{font-size:.78rem}
+.chat-msgs{flex:1;overflow-y:auto;padding:.7rem;background:linear-gradient(#fff,#FCFBF7);display:flex;
+  flex-direction:column;gap:.38rem;max-height:54vh;min-height:15rem}
+.msg{max-width:78%;padding:.4rem .55rem;border-radius:.65rem;font-size:.71rem;line-height:1.55;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);position:relative;word-wrap:break-word;overflow-wrap:anywhere}
+.msg.me{align-self:flex-start;background:linear-gradient(135deg,var(--green),var(--green-l));color:#fff;border-bottom-right-radius:.15rem}
+.msg.other{align-self:flex-end;background:#F2EFE6;color:#333;border-bottom-left-radius:.15rem}
+.msg .mh{font-size:.55rem;opacity:.8;margin-bottom:.1rem;font-weight:700}
+.msg .mt{font-size:.5rem;opacity:.65;text-align:left;margin-top:.15rem}
+.chat-date{align-self:center;font-size:.55rem;background:#EFEADF;color:#777;padding:.1rem .5rem;border-radius:999px;margin:.25rem 0}
+.chat-input{display:flex;gap:.45rem;padding:.55rem;border-top:1px solid var(--border);background:#FAF8F3;align-items:flex-end}
+.chat-input textarea{flex:1;resize:none;min-height:2.4rem;max-height:6rem;margin:0;font-size:.72rem;padding:.4rem .55rem}
+.chat-empty{padding:1.2rem;text-align:center;color:var(--muted);font-size:.72rem}
+.chat-status{font-size:.56rem;color:var(--muted);margin-top:.1rem;min-height:.75rem}
+.chat-typing{font-size:.58rem;color:var(--gold);font-weight:700}
+.tab-badge{display:none;background:var(--absent);color:#fff;border-radius:999px;font-size:.52rem;padding:.05rem .3rem;
+  margin-inline-start:.25rem;font-weight:700}
+.tab-badge.show{display:inline-block}
+@media(max-width:700px){
+  .chat-wrap{grid-template-columns:1fr}
+  .chat-side{max-height:13rem}
+  .chat-list{max-height:9.5rem}
+  .chat-msgs{max-height:44vh}
+}
+
+/* ================= الطباعة ================= */
+@media print{
+  @page{size:A4 landscape;margin:8mm}
+  #prayerClock,.pc,header,.tabs,.qp-mute,.tst,.sb,.sh,.loading-screen,#loginWrap,.no-print{display:none!important}
+  html,body,#app{background:#fff!important}
+  main{max-width:none!important;padding:0!important;margin:0!important}
+  .card{box-shadow:none!important;border:1px solid #b9b9b9!important;page-break-inside:auto;overflow:visible!important}
+  table{width:100%!important;table-layout:fixed!important;font-size:8pt!important;border:1px solid #666!important}
+  th,td{border:1px solid #888!important;white-space:normal!important;word-wrap:break-word!important;
+    overflow-wrap:anywhere!important;padding:2px 3px!important}
+  thead{display:table-header-group}
+  tr{page-break-inside:avoid}
+  .kg{display:flex!important;flex-wrap:wrap;gap:4px!important}
+  .kpi{min-height:0!important;aspect-ratio:auto!important;box-shadow:none!important;border:1px solid #bbb!important;width:auto!important}
+  .ki{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -499,7 +686,10 @@ background:linear-gradient(160deg,var(--deep),var(--deep2));padding:.6rem;box-sh
 <div class="sb" id="sheetBg" onclick="closeSheet()"></div>
 <div class="sh" id="sheet">
   <div class="shh">
-    <div><h3 id="sheetName">—</h3><div style="font-size:0.625rem;opacity:.85" id="sheetMeta">—</div></div>
+    <div class="sh-title">
+      <span class="sh-grip" title="اسحب لتحريك اللوحة • صغّرها من الزاوية • انقر مرتين لإرجاعها" aria-hidden="true">⠿</span>
+      <div style="min-width:0"><h3 id="sheetName">—</h3><div style="font-size:0.625rem;opacity:.85" id="sheetMeta">—</div></div>
+    </div>
     <button class="x" onclick="closeSheet()">×</button>
   </div>
   <div class="shb" id="sheetBody"></div>
@@ -508,6 +698,11 @@ background:linear-gradient(160deg,var(--deep),var(--deep2));padding:.6rem;box-sh
 <div class="mb" id="modalBg">
   <div class="mo"><button class="mx" onclick="closeModal()">×</button>
     <div id="modalContent"></div></div>
+</div>
+
+<div class="mb" id="printOptsBg" onclick="if(event.target===this)closePrintOpts()">
+  <div class="mo" style="max-width:34rem"><button class="mx" onclick="closePrintOpts()">×</button>
+    <div id="printOptsContent"></div></div>
 </div>
 
 <div class="qp-modal" id="qpModal" onclick="if(event.target===this)closeQuran()"><div class="qp-modal-in"><button class="qp-x" onclick="closeQuran()" aria-label="إغلاق">×</button><div id="qpSlot"></div></div></div>
@@ -526,6 +721,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* ================= CACHE ================= */
 const CACHE = {users:null,students:null,circles:null,recitations:null,attendance:null,directives:null,requests:null,staff:null};
+let _ABS_CACHE={};
 
 async function loadAll(){
   const [u,s,c,r,a,d,q,st] = await Promise.all([
@@ -546,6 +742,7 @@ async function loadAll(){
   CACHE.directives = d.data || [];
   CACHE.requests = q.data || [];
   CACHE.staff = st.data || [];
+  _ABS_CACHE={};
 }
 
 const gU=()=>CACHE.users||[];
@@ -554,7 +751,8 @@ const gC=()=>CACHE.circles||[];
 const gR=()=>CACHE.recitations||[];
 const gA=()=>CACHE.attendance||[];
 const gD=()=>CACHE.directives||[];
-const gQ=()=>CACHE.requests||[];
+const gQ=()=>(CACHE.requests||[]).filter(q=>q.type!=='chat');
+const gChatRows=()=>(CACHE.requests||[]).filter(q=>q.type==='chat');
 const gStaff=()=>CACHE.staff||[];
 
 /* ================= DB ================= */
@@ -634,10 +832,433 @@ const sMax=n=>{const s=SURAHS.find(x=>x.n===n);return s?s.a:0};
 function toast(m,e){const t=document.getElementById('toast');if(!t)return;t.textContent=m;t.className='tst show'+(e?' error':'');setTimeout(()=>{t.className='tst'+(e?' error':'')},3500);}
 function cntA(fs,fa,ts,ta){if(fs===ts)return ta-fa+1;let t=sMax(fs)-fa+1;for(let s=fs+1;s<ts;s++)t+=sMax(s);return t+ta;}
 let _seq=0;const newId=()=>Date.now()*1000+(_seq++%1000);
-function closeModal(){const m=document.getElementById('modalBg');if(m)m.classList.remove('show');}
+function resetDragPanel(p){
+  if(!p)return;
+  p.style.position='';p.style.margin='';p.style.width='';p.style.height='';p.style.left='';p.style.top='';
+  p.style.transform='';p.style.maxWidth=p.dataset.origMaxWidth||'';p.classList.remove('dragging');
+}
+function makeDragPanel(p){
+  if(!p||p.dataset.dragReady)return;p.dataset.dragReady='1';
+  p.dataset.origMaxWidth=p.style.maxWidth||'';
+  const h=document.createElement('div');
+  h.className='drag-handle';h.textContent='⠿';h.title='اسحب لتحريك النافذة • انقر مرتين لإرجاعها للمنتصف';
+  p.appendChild(h);
+  let drag=false,sx=0,sy=0,ox=0,oy=0;
+  const move=e=>{
+    if(!drag)return;
+    const maxL=window.innerWidth-p.offsetWidth-6,maxT=window.innerHeight-46;
+    p.style.left=Math.max(6,Math.min(maxL,ox+e.clientX-sx))+'px';
+    p.style.top=Math.max(6,Math.min(maxT,oy+e.clientY-sy))+'px';
+  };
+  const up=()=>{drag=false;document.removeEventListener('pointermove',move);p.classList.remove('dragging');};
+  h.addEventListener('pointerdown',e=>{
+    if(e.button!==0)return;
+    const r=p.getBoundingClientRect();
+    p.style.position='fixed';p.style.margin='0';p.style.width=r.width+'px';
+    p.style.maxWidth='calc(100vw - 1rem)';p.style.left=r.left+'px';p.style.top=r.top+'px';p.style.transform='none';
+    p.classList.add('dragging');
+    sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;drag=true;e.preventDefault();
+    document.addEventListener('pointermove',move);
+    document.addEventListener('pointerup',up,{once:true});
+  });
+  h.addEventListener('dblclick',()=>resetDragPanel(p));
+}
+function resetSheetPanel(p){
+  if(!p)return;
+  p.style.position='';p.style.left='';p.style.top='';p.style.right='';p.style.bottom='';
+  p.style.width='';p.style.height='';p.style.minWidth='';p.style.minHeight='';
+  p.style.maxWidth='';p.style.maxHeight='';p.style.margin='';p.style.transform='';
+  p.classList.remove('sheet-dragging');
+}
+function makeSheetPanel(p){
+  if(!p||p.dataset.sheetReady)return;p.dataset.sheetReady='1';
+  const h=p.querySelector('.shh');if(!h)return;
+  let drag=false,sx=0,sy=0,ox=0,oy=0;
+  const move=e=>{
+    if(!drag)return;
+    const maxL=Math.max(0,window.innerWidth-p.offsetWidth),maxT=Math.max(0,window.innerHeight-p.offsetHeight);
+    p.style.left=Math.max(0,Math.min(maxL,ox+e.clientX-sx))+'px';
+    p.style.top=Math.max(0,Math.min(maxT,oy+e.clientY-sy))+'px';
+  };
+  const up=()=>{drag=false;document.removeEventListener('pointermove',move);p.classList.remove('sheet-dragging');};
+  h.addEventListener('pointerdown',e=>{
+    if(e.button!==0||e.target.closest('button,input,select,textarea,a,label'))return;
+    const r=p.getBoundingClientRect();
+    p.style.position='fixed';p.style.left=r.left+'px';p.style.top=r.top+'px';
+    p.style.right='auto';p.style.bottom='auto';p.style.width=r.width+'px';p.style.height=r.height+'px';
+    p.style.margin='0';p.style.transform='none';p.style.maxWidth='calc(100vw - .5rem)';
+    p.style.maxHeight='calc(100vh - .5rem)';p.classList.add('sheet-dragging');
+    sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;drag=true;e.preventDefault();
+    document.addEventListener('pointermove',move);
+    document.addEventListener('pointerup',up,{once:true});
+  });
+  h.addEventListener('dblclick',e=>{if(!e.target.closest('button'))resetSheetPanel(p);});
+}
+function initDragPanels(){
+  document.querySelectorAll('#modalBg .mo,#printOptsBg .mo').forEach(makeDragPanel);
+  makeSheetPanel(document.getElementById('sheet'));
+}
+function closeModal(){const m=document.getElementById('modalBg');if(m)m.classList.remove('show');
+  document.querySelectorAll('#modalBg .mo').forEach(resetDragPanel);}
 const gLbl=g=>({excellent:'ممتاز',verygood:'جيد جداً',good:'جيد',weak:'ضعيف',repeat:'يعيد'})[g]||g;
 const rLbl=r=>({admin:'مدير',supervisor:'مشرف',teacher:'مدرس',student:'طالب'})[r]||r;
 const sLbl=s=>({present:'حاضر',absent:'غائب',excused:'مستأذن',disconnected:'منقطع'})[s]||s;
+
+/* ================= احتساب الحضور والغياب =================
+   القاعدة: وجود تسميع في اليوم = حاضر. وإذا لم يسمّع يُحتسب غائباً،
+   إلا إذا سجّل المدرس له «مستأذن» أو «حاضر» يدوياً.
+   أيام الحلقة = الأيام التي فيها تسميع أو تحضير لأي طالب في نفس الحلقة. */
+const isAbsStatus=st=>st==='absent'||st==='disconnected';
+const _inRange=(d,f,t)=>(!f||d>=f)&&(!t||d<=t);
+function recOnDate(sid,d){return gR().some(r=>r.student_id===sid&&r.date===d);}
+function statusOn(sid,d){
+  if(recOnDate(sid,d))return 'present';
+  const a=gA().find(x=>x.student_id===sid&&x.date===d);
+  return a?a.status:'absent';
+}
+function circleAbsenceStats(cid,f,t){
+  const key='c:'+cid+':'+(f||'')+':'+(t||'');
+  if(_ABS_CACHE[key])return _ABS_CACHE[key];
+  const students=gS().filter(s=>s.circle_id===cid);
+  const ids=new Set(students.map(s=>s.id));
+  const recs=new Map(),atts=new Map(),dates=new Set();
+  gR().forEach(r=>{
+    if(ids.has(r.student_id)&&_inRange(r.date,f,t)){
+      dates.add(r.date);
+      if(!recs.has(r.student_id))recs.set(r.student_id,new Set());
+      recs.get(r.student_id).add(r.date);
+    }
+  });
+  gA().forEach(a=>{
+    if(ids.has(a.student_id)&&_inRange(a.date,f,t)){
+      dates.add(a.date);
+      if(!atts.has(a.student_id))atts.set(a.student_id,new Map());
+      atts.get(a.student_id).set(a.date,a.status);
+    }
+  });
+  const per={};let total=0;
+  students.forEach(st=>{
+    let n=0;
+    dates.forEach(d=>{
+      const hasR=recs.get(st.id)&&recs.get(st.id).has(d);
+      const a=atts.get(st.id)&&atts.get(st.id).get(d);
+      if(!hasR&&!(a==='present'||a==='excused'))n++;
+    });
+    per[st.id]=n;total+=n;
+  });
+  const out={per,total,sessions:[...dates].sort(),students};
+  _ABS_CACHE[key]=out;return out;
+}
+function _studentSessionDates(sid,f,t){
+  const s=gS().find(x=>x.id===sid);if(!s)return [];
+  const ids=s.circle_id?new Set(gS().filter(x=>x.circle_id===s.circle_id).map(x=>x.id)):new Set([sid]);
+  const dates=new Set();
+  gR().forEach(r=>{if(ids.has(r.student_id)&&_inRange(r.date,f,t))dates.add(r.date);});
+  gA().forEach(a=>{if(ids.has(a.student_id)&&_inRange(a.date,f,t))dates.add(a.date);});
+  return [...dates].sort();
+}
+function studentAbsenceStats(sid,f,t){
+  const s=gS().find(x=>x.id===sid);if(!s)return {count:0,sessions:0};
+  if(s.circle_id){const c=circleAbsenceStats(s.circle_id,f,t);return {count:c.per[sid]||0,sessions:c.sessions.length};}
+  const dates=_studentSessionDates(sid,f,t);let count=0;
+  dates.forEach(d=>{if(isAbsStatus(statusOn(sid,d)))count++;});
+  return {count,sessions:dates.length};
+}
+function studentAttendanceStats(sid,f,t){
+  const dates=_studentSessionDates(sid,f,t);
+  let present=0,absent=0,excused=0;
+  dates.forEach(d=>{const st=statusOn(sid,d);if(st==='present')present++;else if(st==='excused')excused++;else absent++;});
+  return {present,absent,excused,total:dates.length};
+}
+
+/* ================= طباعة التقارير والكشوف ================= */
+const PRINT_CSS=`
+@page{size:A4 landscape;margin:8mm}
+*{box-sizing:border-box}
+body{font-family:'Tajawal','Segoe UI',Tahoma,Arial,sans-serif;direction:rtl;color:#222;margin:0;padding:0;background:#fff}
+.pr-head{text-align:center;border-bottom:3px solid #C9A227;padding-bottom:6px;margin-bottom:10px}
+.pr-head h1{font-size:17pt;margin:0 0 2px;color:#1B4D3E}
+.pr-head div{font-size:9pt;color:#666}
+h2,h3{color:#1B4D3E;margin:4px 0 6px}
+h2{font-size:14pt}h3{font-size:11pt}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8.3pt;margin:4px 0 10px}
+th,td{border:1px solid #888;padding:3px 4px;text-align:center;vertical-align:middle;white-space:normal;
+  word-wrap:break-word;overflow-wrap:anywhere;line-height:1.35}
+th{background:#1B4D3E;color:#fff;font-weight:700;font-size:8pt}
+tbody tr:nth-child(even) td{background:#F7F5EF}
+thead{display:table-header-group}
+tr{page-break-inside:avoid}
+.card{border:1px solid #bbb;border-radius:6px;padding:6px;margin-bottom:8px;box-shadow:none;overflow:visible}
+.info{background:#FAF8F3;border:1px solid #ddd;border-radius:6px;padding:6px 8px;margin-bottom:8px;font-size:9pt;line-height:1.7}
+.kg{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.kpi{display:flex;align-items:center;gap:5px;border:1px solid #bbb;border-radius:6px;padding:4px 8px;min-width:85px}
+.kpi .ki{display:none}
+.kpi .kn{font-size:12pt;font-weight:700;color:#1B4D3E}
+.kpi .kl{font-size:8pt;color:#666}
+.ms{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.mst{border:1px solid #bbb;border-radius:6px;padding:4px 8px;min-width:75px;text-align:center}
+.mst .n{font-size:12pt;font-weight:700;color:#1B4D3E}
+.mst .l{font-size:8pt;color:#666}
+.badge{display:inline-block;padding:1px 5px;border-radius:8px;font-size:8pt;font-weight:700}
+.badge.present,.badge.excellent,.badge.approved{background:#E6F2EE;color:#1B4D3E}
+.badge.absent,.badge.weak,.badge.rejected{background:#FBE9E9;color:#B23A3A}
+.badge.excused,.badge.good,.badge.pending{background:#FBF3DD;color:#9A7B1A}
+button,.btn,.mx,.no-print{display:none!important}
+.tl{display:block}
+.tli{border:1px solid #ddd;border-radius:5px;padding:4px 6px;margin-bottom:3px;font-size:8.5pt;page-break-inside:avoid}
+details{display:block}
+details>summary{display:block;list-style:none;padding:4px 0}
+details>summary::-webkit-details-marker{display:none}
+details:not([open])>*:not(summary){display:block!important}
+.cgroup{border:1px solid #aaa;border-radius:6px;margin-bottom:6px;padding:4px 6px;page-break-inside:auto}
+.cgroup .cgb{display:block!important}
+.csum .arrow{display:none}
+`;
+
+/* ================= خيارات الطباعة ================= */
+const PRINT_OPT_KEY='abbasi_print_opts_v1';
+const PRINT_OPT_DEF={header:true,date:true,kpis:true,info:true,table:true,
+  cols:{teacher:true,circle:true,last:true,absence:true,account:true,password:true,period:true,
+    juz:true,pages:true,attendance:true,grade:true,position:true,recitations:true,quran:false,actions:false}};
+function getPrintOpts(){
+  let o=null;try{o=JSON.parse(localStorage.getItem(PRINT_OPT_KEY)||'null');}catch(e){}
+  if(!o||typeof o!=='object')o=JSON.parse(JSON.stringify(PRINT_OPT_DEF));
+  for(const k of ['header','date','kpis','info','table'])if(o[k]===undefined)o[k]=PRINT_OPT_DEF[k];
+  o.cols=Object.assign({},PRINT_OPT_DEF.cols,o.cols||{});
+  return o;
+}
+let PRINT_OPTS=getPrintOpts();
+function savePrintOpts(){try{localStorage.setItem(PRINT_OPT_KEY,JSON.stringify(PRINT_OPTS));}catch(e){}}
+
+const PRINT_COL_DEFS=[
+  ['teacher','الشيخ / المدرس',['الشيخ','المدرس']],
+  ['circle','الحلقة',['الحلقة']],
+  ['last','آخر تسميع',['آخر تسميع']],
+  ['absence','عدد الغياب',['الغياب']],
+  ['account','اسم المستخدم',['المستخدم']],
+  ['password','كلمة المرور',['المرور','كلمة المرور']],
+  ['period','بداية ونهاية الفترة',['بداية الفترة','نهاية الفترة']],
+  ['juz','الأجزاء',['الأجزاء']],
+  ['pages','الصفحات',['الصفحات','صفحات']],
+  ['attendance','الحضور',['حضور','حضور اليوم']],
+  ['grade','التقدير',['التقدير','تقييم']],
+  ['position','الموضع الحالي',['الموضع']],
+  ['recitations','عدد التسميعات',['التسميعات','تسميعات']],
+  ['date','التاريخ',['التاريخ']],
+  ['ayahs','عدد الآيات',['آيات']],
+  ['quran','عمود فتح المصحف',['مصحف']],
+  ['actions','عمود الإجراءات',['إجراءات']]
+];
+const PRINT_TARGETS={
+  report:{title:'التقرير',node:'reportBody',getTitle:()=>'تقرير '+getRange().l,
+    cols:['teacher','period','juz','pages','attendance','grade','actions']},
+  students:{title:'كشف الطلاب',node:'mainView',getTitle:()=>'كشف الطلاب',
+    cols:['circle','teacher','last','absence','account','password','actions']},
+  circle:{title:'كشف الحلقة',node:'modalContent',getTitle:()=>{
+      const h=document.querySelector('#modalContent h3');
+      return h?h.textContent.trim():'كشف الحلقة';},
+    cols:['position','recitations','absence','attendance','actions']},
+  student:{title:'تقرير الطالب',node:'modalContent',getTitle:()=>{
+      const h=document.querySelector('#modalContent h3');
+      return h?h.textContent.trim():'تقرير الطالب';},
+    cols:['date','ayahs','pages','grade','quran']}
+};
+function _printColKey(txt){
+  const t=String(txt||'').trim();
+  const hit=PRINT_COL_DEFS.find(x=>x[2].some(w=>t.includes(w)));
+  return hit?hit[0]:null;
+}
+function applyPrintOpts(clone,o){
+  if(!o)return;
+  if(!o.kpis)clone.querySelectorAll('.kg,.ms').forEach(n=>n.remove());
+  if(!o.info)clone.querySelectorAll('.info').forEach(n=>n.remove());
+  if(!o.table)clone.querySelectorAll('table').forEach(n=>n.remove());
+  if(o.table&&o.cols){
+    clone.querySelectorAll('table').forEach(tb=>{
+      const heads=[...tb.querySelectorAll('thead tr:last-child th')];
+      if(!heads.length)return;
+      const hide=[];
+      heads.forEach((th,i)=>{const k=_printColKey(th.textContent);if(k&&o.cols[k]===false)hide.push(i);});
+      if(!hide.length)return;
+      tb.querySelectorAll('tr').forEach(tr=>{
+        const cells=[...tr.children];
+        if(cells.length!==heads.length)return;
+        hide.slice().sort((a,b)=>b-a).forEach(i=>{if(cells[i])cells[i].remove();});
+      });
+    });
+  }
+}
+function printNode(node,title,opts){
+  if(!node)return;
+  const o=opts||getPrintOpts();
+  const clone=node.cloneNode(true);
+  clone.querySelectorAll('button,.btn,.mx,.no-print,script').forEach(n=>n.remove());
+  applyPrintOpts(clone,o);
+  const head=o.header?('<div class="pr-head"><h1>'+esc(title)+'</h1>'+
+    (o.date?'<div>منصة العباسي لإدارة حلقات تحفيظ القرآن الكريم — '+esc(fmtD(today()))+'</div>':'')+
+    '</div>'):'';
+  const ifr=document.createElement('iframe');
+  ifr.setAttribute('aria-hidden','true');
+  ifr.style.cssText='position:fixed;left:-10000px;top:0;width:1px;height:1px;border:0;';
+  document.body.appendChild(ifr);
+  const d=ifr.contentWindow.document;
+  d.open();
+  d.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>'+esc(title)+
+    '</title><style>'+PRINT_CSS+'</style></head><body>'+head+
+    clone.innerHTML+'</body></html>');
+  d.close();
+  setTimeout(()=>{
+    try{ifr.contentWindow.focus();ifr.contentWindow.print();}
+    catch(e){window.print();}
+    setTimeout(()=>{try{ifr.remove();}catch(_){}} ,2000);
+  },400);
+}
+function printReport(){printNode(document.getElementById('reportBody'),'تقرير '+getRange().l,getPrintOpts());}
+function printStudents(){printNode(document.getElementById('mainView'),'كشف الطلاب',getPrintOpts());}
+function printCircle(){printNode(document.getElementById('modalContent'),'كشف الحلقة',getPrintOpts());}
+
+function openPrintOptions(target){
+  const cfg=PRINT_TARGETS[target];if(!cfg)return;
+  const src=document.getElementById(cfg.node);
+  if(!src){toast('لا يوجد محتوى للطباعة',true);return;}
+  PRINT_OPTS=getPrintOpts();
+  window.__printTarget=target;
+  window.__printSource=src.innerHTML;
+  window.__printTitle=cfg.getTitle();
+  renderPrintOpts();
+  document.getElementById('printOptsBg').classList.add('show');
+}
+function renderPrintOpts(){
+  const cfg=PRINT_TARGETS[window.__printTarget]||PRINT_TARGETS.report;
+  const o=PRINT_OPTS;
+  const secs=[['header','ترويسة التقرير (العنوان)'],['date','تاريخ الطباعة'],
+    ['kpis','بطاقات الإحصائيات'],['info','بيانات الطالب / الحلقة'],['table','الجداول والكشوف']];
+  const cols=PRINT_COL_DEFS.filter(x=>cfg.cols.includes(x[0]));
+  document.getElementById('printOptsContent').innerHTML=`
+    <h3>🖨️ خيارات طباعة ${esc(cfg.title)}</h3>
+    <div class="po-hint">اختر الأقسام والأعمدة التي تريد إظهارها في الورقة. تُحفظ اختياراتك تلقائياً للطباعة القادمة.</div>
+    <div class="po-sec"><b>الأقسام</b><div class="po-grid">
+      ${secs.map(([k,l])=>`<label class="po-item"><input type="checkbox" class="po-sec-cb" data-k="${k}" ${o[k]?'checked':''}> ${l}</label>`).join('')}
+    </div></div>
+    <div class="po-sec"><b>الأعمدة</b><div class="po-grid">
+      ${cols.map(([k,l])=>`<label class="po-item"><input type="checkbox" class="po-col-cb" data-k="${k}" ${o.cols[k]!==false?'checked':''}> ${l}</label>`).join('')}
+    </div></div>
+    <div class="po-actions">
+      <button class="btn" onclick="doPrint()">🖨️ طباعة الآن</button>
+      <button class="btn ghost sm" onclick="printOptsAll(true)">تحديد الكل</button>
+      <button class="btn ghost sm" onclick="printOptsAll(false)">إلغاء الكل</button>
+      <button class="btn ghost" onclick="closePrintOpts()">إلغاء</button>
+    </div>`;
+}
+function printOptsAll(on){
+  document.querySelectorAll('#printOptsContent input[type="checkbox"]').forEach(x=>x.checked=on);
+}
+function closePrintOpts(){document.getElementById('printOptsBg').classList.remove('show');
+  document.querySelectorAll('#printOptsBg .mo').forEach(resetDragPanel);}
+function doPrint(){
+  const cfg=PRINT_TARGETS[window.__printTarget];if(!cfg)return;
+  document.querySelectorAll('#printOptsContent .po-sec-cb').forEach(x=>{PRINT_OPTS[x.dataset.k]=x.checked;});
+  document.querySelectorAll('#printOptsContent .po-col-cb').forEach(x=>{PRINT_OPTS.cols[x.dataset.k]=x.checked;});
+  savePrintOpts();
+  closePrintOpts();
+  const tmp=document.createElement('div');
+  tmp.innerHTML=window.__printSource||'';
+  printNode(tmp,window.__printTitle||cfg.title,PRINT_OPTS);
+}
+
+/* ================= الترقية إلى مرحلة أعلى ================= */
+const LEVELS=['مبتدئ','متوسط','متقدم'];
+function _levelRank(l){const i=LEVELS.indexOf(l);return i<0?50+i: i;}
+function _sortedLevels(){
+  const all=[...new Set(gC().map(c=>c.level||'مبتدئ'))];
+  return all.sort((a,b)=>_levelRank(a)-_levelRank(b)||String(a).localeCompare(String(b),'ar'));
+}
+function _nextLevel(lv){const i=LEVELS.indexOf(lv);return i>=0&&i<LEVELS.length-1?LEVELS[i+1]:lv;}
+function _promoLevelOptions(suggested){
+  const levels=_sortedLevels();
+  return levels.map(l=>`<option value="${esc(l)}" ${l===suggested?'selected':''}>${esc(l)}${l===suggested?' ⬆':''}</option>`).join('');
+}
+function promoFillCircles(){
+  const box=document.getElementById('promoC');if(!box)return;
+  const lv=document.getElementById('promoLv').value;
+  const p=window.__promo||{};
+  const list=gC().filter(c=>(c.level||'مبتدئ')===lv&&c.id!==p.currentCircle);
+  box.innerHTML=list.length?list.map(c=>{
+    const t=gU().find(u=>u.id===c.teacher_id);
+    return `<option value="${c.id}">${esc(c.name)}${t?' — '+esc(t.name):''}</option>`;
+  }).join(''):'<option value="">— لا توجد حلقة في هذه المرحلة —</option>';
+  const hint=document.getElementById('promoHint');
+  if(hint)hint.textContent=list.length?'سيتم تحديث الحلقة والمدرس تلقائياً عند الحفظ.':'أنشئ حلقة بهذه المرحلة أولاً من صفحة الحلقات، ثم أعد المحاولة.';
+}
+function promoteStudent(sid){
+  const s=gS().find(x=>x.id===sid);if(!s)return;
+  const cur=gC().find(c=>c.id===s.circle_id);
+  const lv=cur?(cur.level||'مبتدئ'):'مبتدئ';
+  const suggested=_nextLevel(lv);
+  document.getElementById('modalContent').innerHTML=`
+    <h3>⬆️ ترقية ${esc(s.name)}</h3>
+    <div class="promo-note">المرحلة الحالية: <b>${esc(lv)}</b>${cur?' — الحلقة: <b>'+esc(cur.name)+'</b>':''}<br>
+    اختر المرحلة الأعلى والحلقة المناسبة، وسيُنقل الطالب مع تحديث المدرس تلقائياً.</div>
+    <div class="fg">
+      <div class="form-group"><label>المرحلة الجديدة</label>
+        <select id="promoLv" onchange="promoFillCircles()">${_promoLevelOptions(suggested)}</select></div>
+      <div class="form-group"><label>الحلقة الجديدة</label><select id="promoC"></select></div>
+    </div>
+    <div class="promo-note" id="promoHint"></div>
+    <button class="btn promote" onclick="savePromotion(${sid})">⬆️ نقل الطالب إلى المرحلة الجديدة</button>
+    <button class="btn ghost" onclick="closeModal()" style="margin-right:6px">إلغاء</button>`;
+  window.__promo={mode:'single',sid,currentCircle:s.circle_id||null};
+  document.getElementById('modalBg').classList.add('show');
+  document.getElementById('promoLv').value=suggested;
+  promoFillCircles();
+}
+function promoteCircleStudents(cid){
+  const c=gC().find(x=>x.id===cid);if(!c)return;
+  const list=gS().filter(s=>s.circle_id===cid).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  if(!list.length){toast('لا يوجد طلاب في هذه الحلقة',true);return;}
+  const lv=c.level||'مبتدئ',suggested=_nextLevel(lv);
+  document.getElementById('modalContent').innerHTML=`
+    <h3>⬆️ ترقية طلاب ${esc(c.name)}</h3>
+    <div class="promo-note">المرحلة الحالية: <b>${esc(lv)}</b>. حدّد الطلاب المنتهين من المستوى ثم اختر الحلقة الأعلى.</div>
+    <div class="fg">
+      <div class="form-group"><label>المرحلة الجديدة</label>
+        <select id="promoLv" onchange="promoFillCircles()">${_promoLevelOptions(suggested)}</select></div>
+      <div class="form-group"><label>الحلقة الجديدة</label><select id="promoC"></select></div>
+    </div>
+    <div class="promo-note" id="promoHint"></div>
+    <div class="card"><h3>👦 الطلاب (${list.length})</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:5px">
+      ${list.map(s=>`<label class="st-radio" style="margin:0"><input type="checkbox" class="promo-stu" value="${s.id}" checked> ${esc(s.name)}</label>`).join('')}
+      </div></div>
+    <button class="btn promote" onclick="saveBulkPromotion()">⬆️ نقل الطلاب المحددين</button>
+    <button class="btn ghost" onclick="closeModal()" style="margin-right:6px">إلغاء</button>`;
+  window.__promo={mode:'bulk',cid,currentCircle:cid};
+  document.getElementById('modalBg').classList.add('show');
+  document.getElementById('promoLv').value=suggested;
+  promoFillCircles();
+}
+async function savePromotion(sid){
+  const target=parseInt(document.getElementById('promoC').value);
+  if(!target){toast('اختر حلقة في المرحلة الجديدة أولاً',true);return;}
+  const tc=gC().find(c=>c.id===target),s=gS().find(x=>x.id===sid);
+  if(!tc||!s){toast('بيانات غير موجودة',true);return;}
+  const ok=await DB.saveStudent({...s,circle_id:tc.id,teacher_id:tc.teacher_id||s.teacher_id});
+  if(ok){toast('✓ تم نقل '+s.name+' إلى '+tc.name);closeModal();renderView('students');}
+}
+async function saveBulkPromotion(){
+  const target=parseInt(document.getElementById('promoC').value);
+  if(!target){toast('اختر حلقة في المرحلة الجديدة أولاً',true);return;}
+  const tc=gC().find(c=>c.id===target);
+  const ids=[...document.querySelectorAll('.promo-stu:checked')].map(x=>parseInt(x.value));
+  if(!tc||!ids.length){toast('حدّد طالباً واحداً على الأقل',true);return;}
+  let n=0;
+  for(const id of ids){
+    const s=gS().find(x=>x.id===id);if(!s)continue;
+    const ok=await DB.saveStudent({...s,circle_id:tc.id,teacher_id:tc.teacher_id||s.teacher_id});
+    if(ok)n++;
+  }
+  toast(`✓ تم نقل ${n} طالباً إلى ${tc.name}`);closeModal();renderView('students');
+}
 
 /* ================= PRAYER CLOCK ================= */
 const QTZ='Asia/Qatar';let pcCache=null,pcDate=null;
@@ -779,12 +1400,13 @@ const TABDEF={
   admins:{i:'👑',t:'المديرون'},supervisors:{i:'👔',t:'المشرفون'},teachers:{i:'👨‍🏫',t:'المدرسون'},
   circles:{i:'🎯',t:'الحلقات'},students:{i:'👦',t:{teacher:'طلابي',d:'الطلاب'}},
   reports:{i:'📈',t:{teacher:'تقاريري',d:'التقارير'}},staff:{i:'✋',t:'الموظفون'},
-  quran:{i:'📖',t:'المصحف والتلاوة'},requests:{i:'📝',t:'الاستئذان'},directives:{i:'📢',t:'التوجيهات'},settings:{i:'⚙️',t:'الإعدادات'}};
+  chat:{i:'💬',t:'الدردشة'},
+  quran:{i:'📖',t:'المصحف'},requests:{i:'📝',t:'الاستئذان'},directives:{i:'📢',t:'التوجيهات'},settings:{i:'⚙️',t:'الإعدادات'}};
 const ROLE_TABS={
-  admin:['overview','admins','supervisors','teachers','circles','students','reports','staff','requests','directives','quran','settings'],
-  supervisor:['overview','teachers','circles','students','reports','staff','requests','directives','quran'],
-  teacher:['overview','circles','students','reports','staff','requests','directives','quran'],
-  student:['overview','quran','requests','directives']};
+  admin:['overview','admins','supervisors','teachers','circles','students','reports','staff','chat','requests','directives','quran','settings'],
+  supervisor:['overview','teachers','circles','students','reports','staff','chat','requests','directives','quran'],
+  teacher:['overview','circles','students','reports','staff','chat','requests','directives','quran'],
+  student:['overview','chat','quran','requests','directives']};
 function tabLabel(id,role,c){
   const d=TABDEF[id],o=((c||CFG).tabs||{})[id]||{};
   const base=typeof d.t==='string'?d.t:(d.t[role]||d.t.d||'');
@@ -806,6 +1428,7 @@ const PERM_DEFS=[
   {g:'الصفحات الظاهرة',k:'tab_students',l:'صفحة الطلاب',def:{supervisor:true,teacher:true}},
   {g:'الصفحات الظاهرة',k:'tab_reports',l:'صفحة التقارير',def:{supervisor:true,teacher:true}},
   {g:'الصفحات الظاهرة',k:'tab_staff',l:'صفحة حضور الموظفين',def:{supervisor:true,teacher:false}},
+  {g:'الصفحات الظاهرة',k:'tab_chat',l:'صفحة الدردشة',def:{supervisor:true,teacher:true,student:true}},
   {g:'الصفحات الظاهرة',k:'tab_requests',l:'صفحة الاستئذان',def:{supervisor:true,teacher:true,student:true}},
   {g:'الصفحات الظاهرة',k:'tab_quran',l:'المصحف والتلاوة (الاستماع والقراءة)',def:{supervisor:false,teacher:false,student:true}},
   {g:'الصفحات الظاهرة',k:'tab_directives',l:'صفحة التوجيهات',def:{supervisor:true,teacher:true,student:true}},
@@ -984,7 +1607,7 @@ async function doLogin(){
     cu=f;saveSession(f);enterApp();
   }catch(e){toast('خطأ الاتصال: '+e.message,true);btn.disabled=false;btn.textContent='🔐 تسجيل الدخول';}
 }
-function doLogout(){if(!confirm('خروج؟'))return;cu=null;clearSession();quranHome();DRAFT=null;applyAll(CFG);
+function doLogout(){if(!confirm('خروج؟'))return;chatLeave();cu=null;clearSession();quranHome();DRAFT=null;applyAll(CFG);
   document.getElementById('app').classList.remove('show');
   document.getElementById('loginWrap').style.display='flex';
   document.getElementById('loginUser').value='';document.getElementById('loginPass').value='';}
@@ -996,6 +1619,7 @@ function enterApp(view){
   document.getElementById('hdrDate').textContent=fmtD(today());
   document.getElementById('hdrName').textContent=cu.name;
   const v0=renderTabs(view||'overview');renderView(v0);
+  initChat();
 }
 
 /* ================= TABS ================= */
@@ -1003,7 +1627,8 @@ function renderTabs(active){
   const r=cu.role;const ids=tabsFor(r);
   if(!ids.includes(active))active='overview';
   document.getElementById('tabsNav').innerHTML=ids.map(id=>{const L=tabLabel(id,r);
-    return `<button class="tab ${id===active?'active':''}" onclick="${id==='quran'?'openQuran()':`renderView('${id}',this)`}">${L.i?L.i+' ':''}${esc(L.t)}</button>`;}).join('');
+    return `<button class="tab ${id===active?'active':''}" title="${esc(L.t)}" onclick="${id==='quran'?'openQuran()':`renderView('${id}',this)`}">${L.i?`<span class="ti">${L.i}</span>`:''}<span class="tt">${esc(L.t)}${id==='chat'?'<span class="tab-badge" id="chatTabBadge"></span>':''}</span></button>`;}).join('');
+  updateChatBadge();
   return active;
 }
 
@@ -1021,6 +1646,7 @@ function renderView(v,btn){
     case 'students':m.innerHTML=renderStudents();break;
     case 'reports':m.innerHTML=renderReports();renderReportBody();break;
     case 'staff':m.innerHTML=renderStaff();break;
+    case 'chat':m.innerHTML=renderChat();setTimeout(chatInitView,0);break;
     case 'requests':m.innerHTML=renderRequests();break;
     case 'directives':m.innerHTML=renderDirectives();break;
     case 'settings':m.innerHTML=renderSettings();break;
@@ -1029,28 +1655,58 @@ function renderView(v,btn){
   autoFit();
 }
 
+const KPI_ICON_MAP={
+  'المديرون':'👑','المشرفون':'👔','المدرسون':'👨‍🏫','الحلقات':'🎯','الطلاب':'👥',
+  'حاضر':'✅','غائب':'❌','إجمالي':'📊','تسميع اليوم':'📖','كل الطلبات':'📨','معلقة':'⏳',
+  'طلابي':'👥','حاضر اليوم':'✅','إجمالي التسميعات':'📚','الآيات':'🔢','طلباتي':'📝','واردة':'📥',
+  'تسميعاتي':'📖','حضوري':'✅','غيابي':'❌','غياب اليوم':'🚫','غياب الطلاب':'🚫',
+  'إجمالي غياب الطلاب':'🚫','التسميعات':'📖','حضور':'✅','غياب':'❌','التقدير':'⭐'
+};
 function kpi(i,c,n,l,on){
   const o=(CFG.kpis||{})[l]||{};
   if(o.hide)return '';
-  const ic=o.noIcon?'':(o.i||i);
-  return `<div class="kpi" onclick="${on}">
-  ${ic?`<div class="ki ${c}">${ic}</div>`:''}<div style="flex:1"><div class="kn">${n}</div><div class="kl">${l}</div></div>
-  <div style="color:var(--gold);font-size:0.875rem;opacity:.6">›</div></div>`;}
+  const ic=o.noIcon?'':(o.i||KPI_ICON_MAP[l]||i);
+  return `<div class="kpi" onclick="${on}" title="${esc(l)}">
+  ${ic?`<div class="ki ${c}">${ic}</div>`:''}<div class="kv"><div class="kn">${n}</div><div class="kl">${esc(l)}</div></div>
+  </div>`;}
 
 /* ============ OVERVIEW ============ */
+function circlesOverviewCard(){
+  const C=gC(),S=gS(),U=gU(),R=gR(),T=today();
+  if(!C.length)return '<div class="card"><h3>🎯 الطلاب حسب الحلقة</h3><div class="empty">لا حلقات</div></div>';
+  return `<div class="card"><h3>🎯 الطلاب حسب الحلقة — انقر على اسم الحلقة لعرض الطلاب</h3>
+    <div class="rl">${C.map(c=>{
+      const cs=S.filter(s=>s.circle_id===c.id);
+      const t=U.find(u=>u.id===c.teacher_id);
+      const abs=circleAbsenceStats(c.id);
+      const todayR=R.filter(r=>r.date===T&&cs.some(s=>s.id===r.student_id)).length;
+      return `<div class="sr present" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr auto" onclick="openCircle(${c.id})">
+        <div class="sn">${esc(c.name)}<small>${esc(c.type||'—')} • ${esc(c.level||'—')}</small></div>
+        <div style="font-size:0.6875rem"><b>المدرس:</b><br>${esc(t?t.name:'—')}</div>
+        <div style="font-size:0.6875rem"><b>الطلاب:</b><br><span class="badge present">👦 ${cs.length}</span></div>
+        <div style="font-size:0.6875rem"><b>تسميع اليوم:</b><br><span class="badge good">📖 ${todayR}</span></div>
+        <div style="font-size:0.6875rem"><b>الغياب:</b><br><span class="badge absent" title="الغياب المحتسب: لم يسمّع في أيام الحلقة">✗ ${abs.total}</span></div>
+        <div style="color:var(--gold);font-size:1rem">‹</div>
+      </div>`;
+    }).join('')}</div></div>`;
+}
+function studentsAbsenceTotal(){
+  return gS().reduce((n,s)=>n+studentAbsenceStats(s.id).count,0);
+}
 function renderOverview(){
   const r=cu.role,S=gS(),U=gU(),R=gR(),A=gA(),Q=gQ(),SA=gStaff(),C=gC(),T=today();
   if(r==='student'){
     const s=S.find(x=>x.id===cu.student_id);
     if(!s)return '<div class="empty">لا بيانات</div>';
     const myR=R.filter(x=>x.student_id===s.id),myA=A.filter(a=>a.student_id===s.id);
+    const att=studentAttendanceStats(s.id);
     const t=U.find(u=>u.id===s.teacher_id),c=C.find(x=>x.id===s.circle_id);
     return `<h2>📊 لوحة ${s.name}</h2>
       <div class="info">الشيخ: <b>${t?t.name:'—'}</b> • الحلقة: <b>${c?c.name:'—'}</b></div>
       <div class="kg">${kpi('📖','gd',myR.length,'تسميعاتي',"showDt('myRecs')")}
         ${kpi('📊','b',myR.reduce((x,rc)=>x+cntA(rc.from_surah,rc.from_ayah,rc.to_surah,rc.to_ayah),0),'الآيات',"showDt('myAyahs')")}
-        ${kpi('✓','g',myA.filter(a=>a.status==='present').length,'حضوري',"showDt('myP')")}
-        ${kpi('✗','r',myA.filter(a=>a.status==='absent').length,'غيابي',"showDt('myAb')")}
+        ${kpi('✓','g',att.present,'حضوري',"showDt('myP')")}
+        ${kpi('✗','r',att.absent,'غيابي',"showDt('myAb')")}
         ${kpi('📝','gd',Q.filter(q=>q.requester_id===cu.id).length,'طلباتي',"showDt('myQ')")}</div>
       <div class="card"><h3>📍 موضعي</h3><p style="font-size:1rem;font-family:'Amiri';color:var(--green)">
         <b>${sName(s.cur_surah)}</b> — الآية ${s.cur_ayah}</p></div>`;
@@ -1059,36 +1715,42 @@ function renderOverview(){
     const my=S.filter(s=>s.teacher_id===cu.id),ids=my.map(s=>s.id);
     const myR=R.filter(rc=>ids.includes(rc.student_id)),myA=A.filter(a=>ids.includes(a.student_id));
     const tr=myR.filter(rc=>rc.date===T),ta=myA.filter(a=>a.date===T);
-    return `<h2>📊 لوحة ${cu.name}</h2>
+    const presentToday=my.filter(s=>statusOn(s.id,T)==='present').length;
+    const absentToday=my.filter(s=>statusOn(s.id,T)==='absent').length;
+    return `<h2>📊 لوحة البيانات</h2>
       <div class="kg">${kpi('👦','g',my.length,'طلابي',"showDt('myStudents')")}
-        ${kpi('✓','g',ta.filter(a=>a.status==='present').length,'حاضر اليوم',"showDt('tPresent')")}
+        ${kpi('✓','g',presentToday,'حاضر اليوم',"showDt('tPresent')")}
+        ${kpi('✗','r',absentToday,'غياب اليوم',"showDt('tAbsent')")}
         ${kpi('📖','gd',tr.length,'تسميع اليوم',"showDt('tRecs')")}
         ${kpi('📅','b',myR.length,'إجمالي التسميعات',"showDt('allMyRecs')")}
         ${kpi('📊','b',myR.reduce((x,rc)=>x+cntA(rc.from_surah,rc.from_ayah,rc.to_surah,rc.to_ayah),0),'الآيات',"showDt('myAyahs')")}
         ${kpi('📝','gd',Q.filter(q=>q.requester_id===cu.id).length,'طلباتي',"showDt('myQ')")}
         ${kpi('⏳','r',Q.filter(q=>q.target_role==='teacher'&&q.target_id===cu.id&&q.status==='pending').length,'واردة',"showDt('incoming')")}</div>
+      <div class="card"><h3>🔗 روابط سريعة</h3>
+        <div class="quick-links">
+          <a class="qlink teams" href="https://teams.microsoft.com/meet/3341939461522598?p=jnoAu1jHpvNSSH6Vvs" target="_blank" rel="noopener">👥 فتح برنامج التيمز</a>
+          <a class="qlink site" href="https://sites.google.com/view/taahod?pli=1&amp;authuser=0" target="_blank" rel="noopener">📝 موقع التحضير</a>
+        </div>
+      </div>
       <div class="card"><h3>📢 التوجيهات</h3>${dirList(true)}</div>`;
   }
   if(r==='supervisor'){
     const Tch=U.filter(u=>u.role==='teacher'),stA=SA.filter(a=>a.date===T);
+    const studentsAbsent=studentsAbsenceTotal();
     return `<h2>📊 لوحة ${cu.name}</h2>
       <div class="kg">${kpi('👨‍🏫','b',Tch.length,'المدرسون',"showDt('allTeachers')")}
         ${kpi('🎯','gd',C.length,'الحلقات',"showDt('allCircles')")}
         ${kpi('👦','g',S.length,'الطلاب',"showDt('allStudents')")}
         ${kpi('✓','g',stA.filter(a=>Tch.some(t=>t.id===a.user_id)&&a.status==='present').length,'حضور',"showDt('stP')")}
         ${kpi('✗','r',stA.filter(a=>Tch.some(t=>t.id===a.user_id)&&a.status==='absent').length,'غياب',"showDt('stAb')")}
-        ${kpi('📖','gd',R.filter(rc=>rc.date===T).length,'تسميع اليوم',"showDt('tAllRecs')")}</div>
-      <div class="card"><h3>🎯 الحلقات</h3>
-        <table><thead><tr><th>الحلقة</th><th>المدرس</th><th>الطلاب</th><th>تسميع اليوم</th></tr></thead>
-        <tbody>${C.map(c=>{const t=Tch.find(x=>x.id===c.teacher_id);
-          const cs=S.filter(s=>s.circle_id===c.id);const cR=R.filter(rc=>rc.date===T&&cs.some(s=>s.id===rc.student_id)).length;
-          return `<tr style="cursor:pointer" onclick="openCircle(${c.id})">
-            <td><b>${c.name}</b></td><td>${t?t.name:'—'}</td><td><span class="badge present">${cs.length}</span></td>
-            <td><span class="badge good">${cR}</span></td></tr>`;}).join('')}</tbody></table></div>`;
+        ${kpi('📖','gd',R.filter(rc=>rc.date===T).length,'تسميع اليوم',"showDt('tAllRecs')")}
+        ${kpi('✗','r',studentsAbsent,'غياب الطلاب',"showDt('allStudentsAbs')")}</div>
+      ${circlesOverviewCard()}`;
   }
   const Ad=U.filter(u=>u.role==='admin'),Sp=U.filter(u=>u.role==='supervisor'),Tch=U.filter(u=>u.role==='teacher');
   const Staff=U.filter(u=>['admin','supervisor','teacher'].includes(u.role)),stA=SA.filter(a=>a.date===T);
-  const studA=A.filter(a=>a.date===T),tr=R.filter(rc=>rc.date===T),pq=Q.filter(q=>q.status==='pending');
+  const studP=S.filter(s=>statusOn(s.id,T)==='present').length,studAb=S.filter(s=>statusOn(s.id,T)==='absent').length;
+  const tr=R.filter(rc=>rc.date===T),pq=Q.filter(q=>q.status==='pending');
   return `<h2>📊 لوحة المدير</h2>
     <div class="info">👋 <b>${cu.name}</b> — ${fmtD(T)}</div>
     <h3>👥 المستخدمون</h3>
@@ -1102,11 +1764,13 @@ function renderOverview(){
       ${kpi('✗','r',stA.filter(a=>a.status==='absent').length,'غائب',"showDt('stAb')")}
       ${kpi('📊','b',Staff.length,'إجمالي',"showDt('allStaff')")}</div>
     <h3>👦 حضور الطلاب</h3>
-    <div class="kg">${kpi('✓','g',studA.filter(a=>a.status==='present').length,'حاضر',"showDt('stuP')")}
-      ${kpi('✗','r',studA.filter(a=>a.status==='absent').length,'غائب',"showDt('stuAb')")}</div>
+    <div class="kg">${kpi('✓','g',studP,'حاضر',"showDt('stuP')")}
+      ${kpi('✗','r',studAb,'غائب',"showDt('stuAb')")}</div>
+    ${circlesOverviewCard()}
     <h3>📖 التسميع</h3>
     <div class="kg">${kpi('📖','gd',tr.length,'تسميع اليوم',"showDt('tAllRecs')")}
-      ${kpi('📚','g',R.length,'إجمالي',"showDt('allRecs')")}</div>
+      ${kpi('📚','g',R.length,'إجمالي',"showDt('allRecs')")}
+      ${kpi('✗','r',studentsAbsenceTotal(),'إجمالي غياب الطلاب',"showDt('allStudentsAbs')")}</div>
     <h3>📝 الطلبات</h3>
     <div class="kg">${kpi('📋','b',Q.length,'كل الطلبات',"showDt('allReq')")}
       ${kpi('⏳','gd',pq.length,'معلقة',"showDt('pendReq')")}</div>`;
@@ -1123,13 +1787,15 @@ function showDt(t){
         <td>${sName(x.from_surah)}:${x.from_ayah}→${sName(x.to_surah)}:${x.to_ayah}</td>
         <td>${cntA(x.from_surah,x.from_ayah,x.to_surah,x.to_ayah)}</td>
         <td><span class="badge ${x.grade}">${gLbl(x.grade)}</span></td></tr>`).join('')}</tbody></table>`;break;}
-    case 'myAyahs':{const s=S.find(x=>x.id===cu.student_id);const v=R.filter(x=>x.student_id===s.id)
+    case 'myAyahs':{
+      const ids=cu.role==='student'?[cu.student_id]:S.filter(s=>s.teacher_id===cu.id).map(s=>s.id);
+      const v=R.filter(x=>ids.includes(x.student_id))
       .reduce((t,x)=>t+cntA(x.from_surah,x.from_ayah,x.to_surah,x.to_ayah),0);
       h=`<h3>📊 إجمالي الآيات: ${v}</h3>`;break;}
-    case 'myP':{const s=S.find(x=>x.id===cu.student_id);const v=A.filter(a=>a.student_id===s.id&&a.status==='present');
-      h=`<h3>✓ حضوري (${v.length})</h3><table><tbody>${v.map(a=>`<tr><td>${fmtD(a.date)}</td></tr>`).join('')}</tbody></table>`;break;}
-    case 'myAb':{const s=S.find(x=>x.id===cu.student_id);const v=A.filter(a=>a.student_id===s.id&&a.status==='absent');
-      h=`<h3>✗ غيابي (${v.length})</h3><table><tbody>${v.map(a=>`<tr><td>${fmtD(a.date)}</td></tr>`).join('')}</tbody></table>`;break;}
+    case 'myP':{const s=S.find(x=>x.id===cu.student_id);const v=_studentSessionDates(s.id).filter(d=>statusOn(s.id,d)==='present').reverse();
+      h=`<h3>✓ حضوري (${v.length})</h3><table><tbody>${v.map(d=>`<tr><td>${fmtD(d)}</td></tr>`).join('')||'<tr><td class="empty">لا أيام حضور</td></tr>'}</tbody></table>`;break;}
+    case 'myAb':{const s=S.find(x=>x.id===cu.student_id);const v=_studentSessionDates(s.id).filter(d=>isAbsStatus(statusOn(s.id,d))).reverse();
+      h=`<h3>✗ غيابي (${v.length})</h3><table><tbody>${v.map(d=>`<tr><td>${fmtD(d)}</td></tr>`).join('')||'<tr><td class="empty">لا غياب</td></tr>'}</tbody></table>`;break;}
     case 'myQ':{const v=Q.filter(q=>q.requester_id===cu.id);
       h=`<h3>📝 طلباتي (${v.length})</h3>${v.length?v.map(q=>reqCard(q,false)).join(''):'<div class="empty">لا طلبات</div>'}`;break;}
     case 'myStudents':{const v=S.filter(s=>s.teacher_id===cu.id);
@@ -1137,10 +1803,10 @@ function showDt(t){
         <tbody>${v.map(s=>{const r=R.filter(x=>x.student_id===s.id);
         return `<tr style="cursor:pointer" onclick="closeModal();openSheet(${s.id})"><td>${s.name}</td>
         <td>${sName(s.cur_surah)}:${s.cur_ayah}</td><td>${r.length}</td></tr>`;}).join('')}</tbody></table>`;break;}
-    case 'tPresent':{const ids=S.filter(s=>s.teacher_id===cu.id).map(s=>s.id);
-      const v=A.filter(a=>ids.includes(a.student_id)&&a.date===T&&a.status==='present');
-      h=`<h3>✓ حاضرون اليوم (${v.length})</h3><table><tbody>${v.map(a=>{const s=S.find(x=>x.id===a.student_id);
-        return s?`<tr><td>${s.name}</td></tr>`:'';}).join('')||'<tr><td class="empty">لا أحد</td></tr>'}</tbody></table>`;break;}
+    case 'tPresent':{const v=S.filter(s=>s.teacher_id===cu.id&&statusOn(s.id,T)==='present');
+      h=`<h3>✓ حاضرون اليوم (${v.length})</h3><table><tbody>${v.map(s=>`<tr><td>${s.name}</td></tr>`).join('')||'<tr><td class="empty">لا أحد</td></tr>'}</tbody></table>`;break;}
+    case 'tAbsent':{const v=S.filter(s=>s.teacher_id===cu.id&&statusOn(s.id,T)==='absent');
+      h=`<h3>✗ غائبون اليوم (${v.length})</h3><table><tbody>${v.map(s=>`<tr><td>${s.name}</td></tr>`).join('')||'<tr><td class="empty">لا أحد</td></tr>'}</tbody></table>`;break;}
     case 'tRecs':{const ids=S.filter(s=>s.teacher_id===cu.id).map(s=>s.id);
       const v=R.filter(r=>ids.includes(r.student_id)&&r.date===T);
       h=`<h3>📖 تسميعات اليوم (${v.length})</h3><table><thead><tr><th>الطالب</th><th>النطاق</th><th>تقييم</th></tr></thead>
@@ -1185,12 +1851,15 @@ function showDt(t){
         <tbody>${R.slice(-100).reverse().map(r=>{const s=S.find(x=>x.id===r.student_id);
         return `<tr><td>${fmtS(r.date)}</td><td>${s?s.name:'—'}</td>
         <td>${sName(r.from_surah)}:${r.from_ayah}→${sName(r.to_surah)}:${r.to_ayah}</td></tr>`;}).join('')}</tbody></table>`;break;}
-    case 'stuP':{const v=A.filter(a=>a.date===T&&a.status==='present');
-      h=`<h3>✓ حضور الطلاب (${v.length})</h3><table><tbody>${v.map(a=>{const s=S.find(x=>x.id===a.student_id);
-        return s?`<tr><td>${s.name}</td></tr>`:'';}).join('')||'<tr><td class="empty">لا أحد</td></tr>'}</tbody></table>`;break;}
-    case 'stuAb':{const v=A.filter(a=>a.date===T&&a.status==='absent');
-      h=`<h3>✗ غياب الطلاب (${v.length})</h3><table><tbody>${v.map(a=>{const s=S.find(x=>x.id===a.student_id);
-        return s?`<tr><td>${s.name}</td></tr>`:'';}).join('')||'<tr><td class="empty">لا أحد</td></tr>'}</tbody></table>`;break;}
+    case 'stuP':{const v=S.filter(s=>statusOn(s.id,T)==='present');
+      h=`<h3>✓ حضور الطلاب (${v.length})</h3><table><tbody>${v.map(s=>`<tr><td>${s.name}</td></tr>`).join('')||'<tr><td class="empty">لا أحد</td></tr>'}</tbody></table>`;break;}
+    case 'stuAb':{const v=S.filter(s=>statusOn(s.id,T)==='absent');
+      h=`<h3>✗ غياب الطلاب (${v.length})</h3><table><tbody>${v.map(s=>`<tr><td>${s.name}</td></tr>`).join('')||'<tr><td class="empty">لا أحد</td></tr>'}</tbody></table>`;break;}
+    case 'allStudentsAbs':{const v=S.map(s=>({s,n:studentAbsenceStats(s.id).count,c:C.find(x=>x.id===s.circle_id)}))
+        .sort((a,b)=>b.n-a.n);
+      h=`<h3>✗ إجمالي غياب الطلاب (${v.reduce((x,y)=>x+y.n,0)})</h3>
+        <table><thead><tr><th>الطالب</th><th>الحلقة</th><th>عدد الغياب</th></tr></thead>
+        <tbody>${v.map(x=>`<tr><td>${x.s.name}</td><td>${x.c?x.c.name:'—'}</td><td><span class="badge ${x.n?'absent':'present'}">✗ ${x.n}</span></td></tr>`).join('')||'<tr><td colspan="3" class="empty">لا بيانات</td></tr>'}</tbody></table>`;break;}
     case 'allAdmins':{const v=U.filter(u=>u.role==='admin');
       h=`<h3>👑 المديرون (${v.length})</h3><table><tbody>${v.map(u=>`<tr><td>${u.name}</td>
         <td dir="ltr">${u.username}</td><td dir="ltr">${u.phone||'—'}</td></tr>`).join('')}</tbody></table>`;break;}
@@ -1248,12 +1917,14 @@ function renderCircles(){
       const t=T.find(x=>x.id===c.teacher_id),s=S.find(x=>x.id===c.supervisor_id);
       const cs=St.filter(st=>st.circle_id===c.id);
       const todayR=gR().filter(r=>r.date===today()&&cs.some(st=>st.id===r.student_id)).length;
-      return `<div class="sr present" onclick="openCircle(${c.id})" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr auto">
+      const abs=circleAbsenceStats(c.id);
+      return `<div class="sr present" onclick="openCircle(${c.id})" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr auto">
         <div class="sn">${c.name}<small>${c.type||'—'} • ${c.level||'—'}</small></div>
         <div style="font-size:0.6875rem"><b>المدرس:</b><br>${t?t.name:'—'}</div>
         <div style="font-size:0.6875rem"><b>المشرف:</b><br>${s?s.name:'—'}</div>
-        <div style="font-size:0.6875rem"><b>الطلاب:</b><br><span class="badge present">${cs.length}</span></div>
-        <div style="font-size:0.6875rem"><b>تسميع:</b><br><span class="badge good">${todayR}</span></div>
+        <div style="font-size:0.6875rem"><b>الطلاب:</b><br><span class="badge present">👦 ${cs.length}</span></div>
+        <div style="font-size:0.6875rem"><b>تسميع اليوم:</b><br><span class="badge good">📖 ${todayR}</span></div>
+        <div style="font-size:0.6875rem"><b>الغياب:</b><br><span class="badge absent" title="الغياب المحتسب: لم يسمّع في أيام الحلقة">✗ ${abs.total}</span></div>
         <div style="display:flex;gap:3px">
         ${canEdit?`<button class="btn sm" onclick="event.stopPropagation();editCircle(${c.id})">✏️</button>
         <button class="btn danger sm" onclick="event.stopPropagation();delCircle(${c.id})">🗑</button>`:''}
@@ -1266,35 +1937,44 @@ function renderCircles(){
 function openCircle(id){
   const c=gC().find(x=>x.id===id);
   if(!c){toast('الحلقة غير موجودة',true);return;}
-  const U=gU(),S=gS(),R=gR(),A=gA(),T=today();
+  const U=gU(),S=gS(),R=gR(),T=today();
   let students=S.filter(s=>s.circle_id===id);
   if(students.length===0&&c.teacher_id){
-    students=S.filter(s=>s.teacher_id===c.teacher_id&&(!s.circle_id||s.circle_id===id));
+    students=S.filter(s=>s.teacher_id===c.teacher_id&&!s.circle_id);
   }
   students=students.sort((a,b)=>a.name.localeCompare(b.name,'ar'));
   const t=U.find(u=>u.id===c.teacher_id),s=U.find(u=>u.id===c.supervisor_id);
   const canEdit=can('manage_circles');
+  const canPromote=['admin','supervisor'].includes(cu.role)&&can('manage_students');
+  const abs=circleAbsenceStats(id);
   document.getElementById('modalContent').innerHTML=`
-    <h3>🎯 ${c.name}</h3>
-    <div class="info"><b>النوع:</b> ${c.type||'—'} | <b>المستوى:</b> ${c.level||'—'}<br>
-    <b>المدرس:</b> ${t?t.name:'—'} | <b>المشرف:</b> ${s?s.name:'—'}<br>
-    <b>الجدول:</b> ${c.schedule||'—'} | <b>المكان:</b> ${c.location||'—'}</div>
+    <div class="ab2"><h3>🎯 ${esc(c.name)}</h3>
+      <button class="btn print sm no-print" onclick="openPrintOptions('circle')">🖨️ طباعة الكشف</button></div>
+    <div class="info"><b>النوع:</b> ${esc(c.type||'—')} | <b>المستوى:</b> ${esc(c.level||'—')} |
+    <b>الغياب المحتسب:</b> <span class="abs-chip">✗ ${abs.total}</span><br>
+    <b>المدرس:</b> ${t?esc(t.name):'—'} | <b>المشرف:</b> ${s?esc(s.name):'—'}<br>
+    <b>الجدول:</b> ${esc(c.schedule||'—')} | <b>المكان:</b> ${esc(c.location||'—')}</div>
     ${students.length?`<div class="card"><h3>👦 الطلاب (${students.length})</h3>
-      <table><thead><tr><th>الاسم</th><th>الموضع</th><th>تسميعات</th><th>حضور اليوم</th><th>إجراءات</th></tr></thead>
+      <table><thead><tr><th>الاسم</th><th>الموضع</th><th>تسميعات</th><th>الغياب</th><th>حضور اليوم</th><th>إجراءات</th></tr></thead>
       <tbody>${students.map(st=>{
         const sr=R.filter(r=>r.student_id===st.id);
-        const at=A.find(a=>a.student_id===st.id&&a.date===T);
+        const stt=statusOn(st.id,T);
+        const nAbs=abs.per[st.id]||0;
         return `<tr>
-        <td><b>${st.name}</b></td><td>${sName(st.cur_surah)}:${st.cur_ayah}</td>
-        <td>${sr.length}</td><td>${at?`<span class="badge ${at.status}">${sLbl(at.status)}</span>`:'—'}</td>
-        <td><button class="btn gold sm" onclick="closeModal();openStudentReport(${st.id},today().slice(0,7)+'-01',today())">📖</button>
-        ${can('manage_students')?`<button class="btn sm" onclick="closeModal();editStudent(${st.id})">✏️</button>`:''}</td>
+        <td><b>${esc(st.name)}</b></td><td>${sName(st.cur_surah)}:${st.cur_ayah}</td>
+        <td>${sr.length}</td>
+        <td><span class="abs-chip ${nAbs?'':'ok'}" title="الغياب المحتسب: لم يسمّع في أيام الحلقة">✗ ${nAbs}</span></td>
+        <td><span class="badge ${stt}">${sLbl(stt)}</span></td>
+        <td><button class="btn gold sm" title="تقرير الطالب" onclick="closeModal();openStudentReport(${st.id},today().slice(0,7)+'-01',today())">📖</button>
+        ${can('manage_students')?`<button class="btn sm" onclick="closeModal();editStudent(${st.id})">✏️</button>`:''}
+        ${canPromote?`<button class="btn promote sm" title="ترقية إلى مرحلة أعلى" onclick="promoteStudent(${st.id})">⬆️</button>`:''}</td>
         </tr>`;}).join('')}</tbody></table>
-      ${can('manage_students')?`<div style="margin-top:8px;display:flex;gap:6px">
+      ${can('manage_students')?`<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
       <button class="btn" onclick="closeModal();addStudentToCircle(${id})">➕ إضافة طالب</button>
+      ${canPromote?`<button class="btn promote" onclick="promoteCircleStudents(${id})">⬆️ ترقية طلاب الحلقة</button>`:''}
       </div>`:''}
       </div>`:'<div class="empty">لا طلاب في هذه الحلقة</div>'}
-    ${canEdit?`<div style="margin-top:8px;display:flex;gap:6px">
+    ${canEdit?`<div style="margin-top:8px;display:flex;gap:6px" class="no-print">
     <button class="btn ghost" onclick="closeModal();editCircle(${id})">✏️ تعديل الحلقة</button>
     <button class="btn danger" onclick="closeModal();delCircle(${id})">🗑 حذف الحلقة</button>
     </div>`:''}`;
@@ -1365,6 +2045,8 @@ async function saveEditCircle(id){
 }
 async function delCircle(id){
   if(!confirm('حذف الحلقة؟'))return;
+  const affected=gS().filter(s=>s.circle_id===id);
+  for(const s of affected)await DB.saveStudent({...s,circle_id:null});
   await DB.deleteCircle(id);toast('✓');closeModal();renderView('circles');
 }
 
@@ -1374,7 +2056,50 @@ function renderStudents(){
   if(role==='supervisor'||role==='admin'){
     const S=gS().slice().sort((a,b)=>a.name.localeCompare(b.name,'ar'));
     const U=gU(),C=gC(),R=gR();
-    return `<h2>👦 الطلاب — أبجدي (${S.length})</h2>
+    const grouped=window.__stView!=='alpha';
+    const canPromote=['admin','supervisor'].includes(role)&&can('manage_students');
+    const pw=can('view_passwords');
+    const rowsFor=(list,numbered)=>list.map((s,i)=>{
+      const t=U.find(u=>u.id===s.teacher_id),c=C.find(x=>x.id===s.circle_id);
+      const acc=U.find(u=>u.role==='student'&&u.student_id===s.id);
+      const lr=R.filter(r=>r.student_id===s.id).sort((a,b)=>b.date.localeCompare(a.date))[0];
+      const nAbs=studentAbsenceStats(s.id).count;
+      return `<tr>${numbered?`<td>${i+1}</td>`:''}<td><b>${esc(s.name)}</b></td>
+      <td>${c?esc(c.name):'—'}</td><td>${t?esc(t.name):'—'}</td>
+      <td>${lr?`${fmtS(lr.date)} <span class="badge ${lr.grade}">${gLbl(lr.grade)}</span>`:'—'}</td>
+      <td><span class="abs-chip ${nAbs?'':'ok'}" title="الغياب المحتسب: لم يسمّع في أيام الحلقة">✗ ${nAbs}</span></td>
+      <td><code dir="ltr">${acc?acc.username:'—'}</code></td>${pw?`<td><code>${acc?acc.password:'—'}</code></td>`:''}
+      <td><button class="btn gold sm" title="تقرير الطالب" onclick="openStudentReport(${s.id},today().slice(0,7)+'-01',today())">📖</button>
+      ${can('manage_students')?`<button class="btn sm" onclick="editStudent(${s.id})">✏️</button>`:''}
+      ${canPromote?`<button class="btn promote sm" title="ترقية إلى مرحلة أعلى" onclick="promoteStudent(${s.id})">⬆️</button>`:''}
+      ${can('manage_students')?`<button class="btn danger sm" onclick="delStudent(${s.id})">🗑</button>`:''}</td></tr>`;
+    }).join('');
+    const tableFor=(list,numbered)=>list.length?`<table><thead><tr>${numbered?'<th>#</th>':''}<th>الاسم</th><th>الحلقة</th><th>الشيخ</th><th>آخر تسميع</th><th>الغياب</th><th>المستخدم</th>${pw?'<th>المرور</th>':''}<th>إجراءات</th></tr></thead>
+      <tbody>${rowsFor(list,numbered)}</tbody></table>`:'<div class="empty">لا طلاب</div>';
+    let groups='';
+    if(grouped){
+      groups=C.map((c,i)=>{
+        const list=S.filter(s=>s.circle_id===c.id).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+        const abs=circleAbsenceStats(c.id);
+        const t=U.find(u=>u.id===c.teacher_id);
+        return `<details class="cgroup" ${i===0?'open':''}>
+          <summary>
+            <span class="cico">🎯</span>
+            <span class="ct">${esc(c.name)}<small>${esc(c.level||'—')} • المدرس: ${t?esc(t.name):'—'}</small></span>
+            <span class="csum"><span class="badge present">👦 ${list.length}</span>
+            <span class="abs-chip">✗ ${abs.total}</span><span class="arrow">▾</span></span>
+          </summary>
+          <div class="cgb">${tableFor(list,false)}</div>
+        </details>`;
+      }).join('');
+      const un=S.filter(s=>!s.circle_id);
+      if(un.length)groups+=`<details class="cgroup"><summary><span class="cico">👦</span>
+        <span class="ct">بدون حلقة<small>طلاب غير مسجلين في حلقة</small></span>
+        <span class="csum"><span class="badge pending">👦 ${un.length}</span><span class="arrow">▾</span></span></summary>
+        <div class="cgb">${tableFor(un,false)}</div></details>`;
+      if(!C.length&&!un.length)groups='<div class="empty">لا حلقات ولا طلاب</div>';
+    }
+    return `<h2>👦 الطلاب (${S.length})</h2>
       <div class="card">
       <div class="ab2"><h3>📋 القائمة</h3>
       <div class="acts">
@@ -1382,27 +2107,20 @@ function renderStudents(){
       ${can('import_export')?`<button class="btn excel" onclick="dlStudentTpl()">📥 قالب</button>`:''}
       ${can('import_export')&&can('manage_students')?`<button class="btn excel" onclick="openImport('student')">📤 استيراد</button>`:''}
       ${can('import_export')?`<button class="btn ghost" onclick="expStudents()">📊 تصدير</button>`:''}
+      <button class="btn print" onclick="openPrintOptions('students')">🖨️ طباعة الكشف</button>
       </div></div>
-      ${S.length?`<table><thead><tr><th>#</th><th>الاسم</th><th>الحلقة</th><th>الشيخ</th><th>آخر تسميع</th><th>المستخدم</th>${can('view_passwords')?'<th>المرور</th>':''}<th>إجراءات</th></tr></thead>
-      <tbody>${S.map((s,i)=>{
-        const t=U.find(u=>u.id===s.teacher_id),c=C.find(x=>x.id===s.circle_id);
-        const acc=U.find(u=>u.role==='student'&&u.student_id===s.id);
-        const lr=R.filter(r=>r.student_id===s.id).sort((a,b)=>b.date.localeCompare(a.date))[0];
-        return `<tr><td>${i+1}</td><td><b>${s.name}</b></td>
-        <td>${c?c.name:'—'}</td><td>${t?t.name:'—'}</td>
-        <td>${lr?`${fmtS(lr.date)} <span class="badge ${lr.grade}">${gLbl(lr.grade)}</span>`:'—'}</td>
-        <td><code dir="ltr">${acc?acc.username:'—'}</code></td>${can('view_passwords')?`<td><code>${acc?acc.password:'—'}</code></td>`:''}
-        <td><button class="btn gold sm" onclick="openStudentReport(${s.id},today().slice(0,7)+'-01',today())">📖</button>
-        ${can('manage_students')?`<button class="btn sm" onclick="editStudent(${s.id})">✏️</button>
-        <button class="btn danger sm" onclick="delStudent(${s.id})">🗑</button>`:''}</td></tr>`;
-      }).join('')}</tbody></table>`:'<div class="empty">لا طلاب</div>'}
+      <div class="pt" style="margin-bottom:.6rem">
+        <button class="ptb ${grouped?'active':''}" onclick="window.__stView='circle';renderView('students')">🎯 حسب الحلقة</button>
+        <button class="ptb ${!grouped?'active':''}" onclick="window.__stView='alpha';renderView('students')">🔤 أبجدي</button>
+      </div>
+      ${grouped?groups:tableFor(S,true)}
       </div>`;
   }
   const S=gS().filter(s=>s.teacher_id===cu.id);
   const T=today();
   if(!window.__selDate)window.__selDate=T;
   const sel=window.__selDate,isT=sel===T;
-  const getAtt=(id)=>{const r=gA().find(a=>a.student_id===id&&a.date===sel);return r?r.status:'absent';};
+  const getAtt=(id)=>statusOn(id,sel);
   return `<h2>👦 طلابي (${S.length})</h2>
     <div class="card" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
     <label style="margin:0">📅 التاريخ:</label>
@@ -1410,13 +2128,14 @@ function renderStudents(){
     <button class="btn ghost sm" onclick="window.__selDate='${T}';renderView('students')">اليوم</button>
     ${!isT?'<span class="badge pending">سابق</span>':''}
     </div>
-    ${S.length?`<div class="info" style="font-size:0.6875rem">💡 كل طالب غائب افتراضياً. عند حفظ تسميعه يصبح حاضراً.</div>
+    ${S.length?`<div class="info" style="font-size:0.6875rem">💡 يحتسب الطالب حاضراً عند إثبات التسميع، ويحتسب غائباً إذا لم يسمّع (إلا إذا سجّلت له «مستأذن»).</div>
     <div class="rl">${S.map(s=>{
       const st=getAtt(s.id);
       const onDate=gR().filter(x=>x.student_id===s.id&&x.date===sel);
       const prev=gR().filter(x=>x.student_id===s.id&&x.date<sel).sort((a,b)=>b.date.localeCompare(a.date))[0];
+      const nAbs=studentAbsenceStats(s.id).count;
       return `<div class="sr ${st}">
-      <div class="sn" onclick="openSheet(${s.id})">${s.name}<small>${sName(s.cur_surah)}:${s.cur_ayah}</small></div>
+      <div class="sn" onclick="openSheet(${s.id})">${s.name}<small>${sName(s.cur_surah)}:${s.cur_ayah} • <span class="abs-chip ${nAbs?'':'ok'}">✗ ${nAbs}</span></small></div>
       <div class="ab">${['present','absent','excused','disconnected'].map(v=>{
         const lbl={present:'حاضر',absent:'غائب',excused:'مستأذن',disconnected:'منقطع'}[v];
         const cls={present:'p',absent:'a',excused:'e',disconnected:'d'}[v];
@@ -1433,6 +2152,7 @@ function renderStudents(){
 
 async function setAtt(sid,st,d){
   if(!d)d=today();
+  if(st!=='present'&&recOnDate(sid,d)){toast('هذا الطالب حاضر بالتسميع — لا يمكن تسجيله غائباً',true);renderView('students');return;}
   const ex=gA().find(a=>a.student_id===sid&&a.date===d);
   const ok=await DB.saveAttendance({id:ex?ex.id:newId(),student_id:sid,date:d,status:st});
   if(ok){toast('✓');renderView('students');}
@@ -1493,10 +2213,24 @@ async function delRec(id){
 
 /* ============ SHEET ============ */
 let curSid=null;
-function openSheet(id){curSid=id;document.getElementById('sheetBg').classList.add('show');
-  document.getElementById('sheet').classList.add('show');renderSheet();}
-function closeSheet(){document.getElementById('sheetBg').classList.remove('show');
-  document.getElementById('sheet').classList.remove('show');}
+function openSheet(id){
+  const sh=document.getElementById('sheet');
+  if(sh){
+    if(sh._resetT){clearTimeout(sh._resetT);sh._resetT=null;}
+    if(!sh.classList.contains('show'))resetSheetPanel(sh);
+  }
+  curSid=id;document.getElementById('sheetBg').classList.add('show');
+  if(sh)sh.classList.add('show');
+  renderSheet();
+}
+function closeSheet(){
+  document.getElementById('sheetBg').classList.remove('show');
+  const sh=document.getElementById('sheet');if(!sh)return;
+  if(sh.style.transform==='none')sh.style.transform='translateX(-100%)';
+  sh.classList.remove('show');
+  if(sh._resetT)clearTimeout(sh._resetT);
+  sh._resetT=setTimeout(()=>{if(!sh.classList.contains('show'))resetSheetPanel(sh);},350);
+}
 function renderSheet(){
   const s=gS().find(x=>x.id===curSid);if(!s)return;
   const recs=gR().filter(r=>r.student_id===curSid).sort((a,b)=>b.date.localeCompare(a.date));
@@ -1905,12 +2639,17 @@ function editStudent(id){
 }
 async function saveEditStudent(id){
   const s=gS().find(x=>x.id===id);
+  const newName=document.getElementById('esN').value.trim();
+  const newNat=document.getElementById('esNat').value.trim();
+  const newID=document.getElementById('esID').value.trim();
+  const newPh=document.getElementById('esPh').value.trim();
+  const newEm=document.getElementById('esEm').value.trim();
   const ok=await DB.saveStudent({...s,
-    name:document.getElementById('esN').value.trim(),
-    nationality:document.getElementById('esNat').value.trim(),
-    national_id:document.getElementById('esID').value.trim(),
-    parent:document.getElementById('esPh').value.trim(),
-    email:document.getElementById('esEm').value.trim(),
+    name:newName,
+    nationality:newNat,
+    national_id:newID,
+    parent:newPh,
+    email:newEm,
     teacher_id:parseInt(document.getElementById('esT').value)||null,
     circle_id:parseInt(document.getElementById('esC').value)||null,
     plan:document.getElementById('esPl').value.trim()});
@@ -1919,9 +2658,9 @@ async function saveEditStudent(id){
     const P=document.getElementById('esP').value;
     const acc=gU().find(u=>u.role==='student'&&u.student_id===id);
     if(U&&P){
-      if(acc)await DB.saveUser({...acc,username:U,password:P,name:s.name});
-      else await DB.saveUser({id:newId(),username:U,password:P,name:s.name,role:'student',student_id:id,
-        nationality:s.nationality,national_id:s.national_id,phone:s.parent,email:s.email});
+      if(acc)await DB.saveUser({...acc,username:U,password:P,name:newName});
+      else await DB.saveUser({id:newId(),username:U,password:P,name:newName,role:'student',student_id:id,
+        nationality:newNat,national_id:newID,phone:newPh,email:newEm});
     }
     toast('✓');closeModal();renderView('students');
   }
@@ -2027,7 +2766,7 @@ async function confirmImp(){
         teacher_id:t?t.id:null,circle_id:c?c.id:null,cur_surah:1,cur_ayah:1,
         plan:(r.plan||'').toString().trim()});
       if(Us&&P&&!gU().find(u=>u.username===Us)){
-        await DB.saveUser({id:sid+1,username:Us,password:P,name:N,role:'student',student_id:sid,
+        await DB.saveUser({id:newId(),username:Us,password:P,name:N,role:'student',student_id:sid,
           nationality:(r.nationality||'').toString().trim(),
           national_id:(r.nationalId||'').toString().trim(),
           phone:(r.parent||'').toString().trim(),
@@ -2068,9 +2807,10 @@ function expReport(){
     const first=sr[0],last=sr[sr.length-1];
     const tot=sr.reduce((x,r)=>x+cntA(r.from_surah,r.from_ayah,r.to_surah,r.to_ayah),0);
     const tch=U.find(u=>u.id===st.teacher_id);
+    const att=studentAttendanceStats(st.id,f,t);
     return [st.name,tch?tch.name:'',first?sName(first.from_surah)+':'+first.from_ayah:'',last?sName(last.to_surah)+':'+last.to_ayah:'',
       sr.length,tot,Math.round(tot/15*10)/10,Math.round(tot/208*10)/10,
-      at.filter(a=>a.status==='present').length,at.filter(a=>a.status==='absent').length];
+      att.present,att.absent];
   });
   const ws=XLSX.utils.aoa_to_sheet([['الطالب','الشيخ','بداية الفترة','نهاية الفترة','التسميعات','الآيات','الصفحات','الأجزاء','حضور','غياب'],...rows]);
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Report');
@@ -2128,7 +2868,7 @@ function renderReports(){
     <button class="ptb" onclick="setR('weekly')">📆 أسبوعي</button>
     <button class="ptb" onclick="setR('monthly')">📊 شهري</button>
     <button class="ptb" onclick="setR('yearly')">📈 سنوي</button>
-    <button class="btn print sm" onclick="window.print()" style="margin-right:auto">🖨️</button>
+    <button class="btn print sm no-print" onclick="openPrintOptions('report')" style="margin-right:auto">🖨️ طباعة</button>
     <button class="btn excel sm" onclick="expReport()">📊 Excel</button>
     </div></div>
     <div id="reportBody"></div>`;
@@ -2175,8 +2915,9 @@ function renderReportBody(){
     const totalA=sr.reduce((x,rc)=>x+cntA(rc.from_surah,rc.from_ayah,rc.to_surah,rc.to_ayah),0);
     const pages=Math.round((totalA/15)*10)/10;
     const juz=Math.round((totalA/208)*10)/10;
-    const p=pA.filter(a=>a.student_id===s.id&&a.status==='present').length;
-    const ab=pA.filter(a=>a.student_id===s.id&&a.status==='absent').length;
+    const att=studentAttendanceStats(s.id,f,t);
+    const p=att.present;
+    const ab=att.absent;
     const grades=sr.map(x=>x.grade);
     const gAvg=grades.length?grades[Math.floor(grades.length/2)]:'—';
     const T=U.find(u=>u.id===s.teacher_id);
@@ -2218,8 +2959,12 @@ function openStudentReport(sid,from,to){
   const totalA=recs.reduce((x,r)=>x+cntA(r.from_surah,r.from_ayah,r.to_surah,r.to_ayah),0);
   const pages=Math.round((totalA/15)*10)/10;
   const juz=Math.round((totalA/208)*10)/10;
+  const att=studentAttendanceStats(sid,from,to);
   document.getElementById('modalContent').innerHTML=`
     <h3>📖 تقرير ${s.name}</h3>
+    <div class="no-print" style="margin-bottom:10px">
+    <button class="btn print sm" onclick="openPrintOptions('student')">🖨️ طباعة</button>
+    </div>
     <div class="info" style="margin-bottom:12px">
     <b>الاسم:</b> ${s.name} | <b>الجنسية:</b> ${s.nationality||'—'}<br>
     <b>الرقم الشخصي:</b> ${s.national_id||'—'} | <b>الجوال:</b> ${s.parent||'—'}<br>
@@ -2231,8 +2976,8 @@ function openStudentReport(sid,from,to){
     <div class="mst"><div class="n">${totalA}</div><div class="l">آيات</div></div>
     <div class="mst"><div class="n">${pages}</div><div class="l">صفحات</div></div>
     <div class="mst"><div class="n">${juz}</div><div class="l">أجزاء</div></div>
-    <div class="mst"><div class="n" style="color:var(--present)">${atts.filter(a=>a.status==='present').length}</div><div class="l">حضور</div></div>
-    <div class="mst"><div class="n" style="color:var(--absent)">${atts.filter(a=>a.status==='absent').length}</div><div class="l">غياب</div></div>
+    <div class="mst"><div class="n" style="color:var(--present)">${att.present}</div><div class="l">حضور</div></div>
+    <div class="mst"><div class="n" style="color:var(--absent)">${att.absent}</div><div class="l">غياب</div></div>
     </div>
     <div class="card"><h3>📅 السجل اليومي التفصيلي</h3>
     <table><thead><tr><th>التاريخ</th><th>من</th><th>إلى</th><th>آيات</th><th>صفحات</th><th>تقييم</th><th>مصحف</th></tr></thead>
@@ -2251,11 +2996,372 @@ function openStudentReport(sid,from,to){
   document.getElementById('modalBg').classList.add('show');
 }
 
-/* ============ صوتیات ============ */
+/* ============ الدردشة المباشرة ============ */
+const CHAT_LOG_KEY='abbasi_chat_log_v1',CHAT_READ_KEY='abbasi_chat_read_v1',CHAT_CHANNEL='abbasi-chat-v2';
+const CHAT={room:null,filter:'',msgs:{},outbox:[],lastRead:{},channel:null,presence:{},typing:{},
+  online:false,lastTyping:0,timer:null};
+const CHAT_ROLE_ICON={admin:'👑',supervisor:'👔',teacher:'👨‍🏫',student:'🎓'};
+
+function chatLoad(){
+  try{
+    const d=JSON.parse(localStorage.getItem(CHAT_LOG_KEY)||'{}')||{};
+    if(d.msgs&&typeof d.msgs==='object')CHAT.msgs=d.msgs;
+    if(Array.isArray(d.outbox))CHAT.outbox=d.outbox;
+    const r=JSON.parse(localStorage.getItem(CHAT_READ_KEY)||'{}')||{};
+    if(r&&typeof r==='object'&&!Array.isArray(r))CHAT.lastRead=r;
+  }catch(e){}
+}
+function chatSave(){
+  try{
+    localStorage.setItem(CHAT_LOG_KEY,JSON.stringify({msgs:CHAT.msgs,outbox:CHAT.outbox}));
+    localStorage.setItem(CHAT_READ_KEY,JSON.stringify(CHAT.lastRead));
+  }catch(e){}
+}
+function chatDmRoom(a,b){const p=[String(a),String(b)].sort();return 'dm:'+p[0]+':'+p[1];}
+function chatContacts(){
+  if(!cu)return [];
+  const S=gS(),U=gU().filter(u=>u.id!==cu.id),out=[];
+  if(cu.role==='student'){
+    const st=S.find(s=>s.id===cu.student_id),tid=st?st.teacher_id:null;
+    U.forEach(u=>{
+      if(u.role==='student')out.push(u);
+      else if(u.role==='supervisor'||u.role==='admin')out.push(u);
+      else if(u.role==='teacher'&&u.id===tid)out.push(u);
+    });
+  }else if(cu.role==='teacher'){
+    const myIds=S.filter(s=>s.teacher_id===cu.id).map(s=>s.id);
+    U.forEach(u=>{
+      if(u.role==='student'&&myIds.includes(u.student_id))out.push(u);
+      else if(u.role==='supervisor'||u.role==='admin')out.push(u);
+    });
+  }else if(cu.role==='supervisor'){
+    U.forEach(u=>{if(['teacher','supervisor','admin','student'].includes(u.role))out.push(u);});
+  }else if(cu.role==='admin'){
+    U.forEach(u=>out.push(u));
+  }
+  return out.map(u=>({id:u.id,name:u.name,role:u.role,room:chatDmRoom(cu.id,u.id)}))
+    .filter((v,i,a)=>a.findIndex(x=>String(x.id)===String(v.id))===i);
+}
+function chatGroups(){
+  if(!cu)return [];
+  const out=[];
+  if(cu.role==='student')out.push({id:'group:students',name:'مجموعة الطلاب',sub:'كل طلاب الحلقات',icon:'🎓'});
+  if(['teacher','supervisor','admin'].includes(cu.role))out.push({id:'group:staff',name:'مجموعة الكادر',sub:'المدرسون والمشرفون والإدارة',icon:'👥'});
+  return out;
+}
+function chatAllRooms(){
+  const groups=chatGroups().map(g=>({id:g.id,name:g.name,sub:g.sub,icon:g.icon,group:true}));
+  const contacts=chatContacts().map(c=>({id:c.room,name:c.name,sub:rLbl(c.role),
+    icon:CHAT_ROLE_ICON[c.role]||'👤',role:c.role,user:c}));
+  return groups.concat(contacts);
+}
+function chatRoomAllowed(room){
+  if(!cu||!room)return false;
+  if(room==='group:students')return cu.role==='student';
+  if(room==='group:staff')return ['teacher','supervisor','admin'].includes(cu.role);
+  if(String(room).indexOf('dm:')===0){
+    const ids=String(room).slice(3).split(':');
+    if(!ids.includes(String(cu.id)))return false;
+    const other=ids.find(x=>x!==String(cu.id));
+    const u=gU().find(x=>String(x.id)===String(other));
+    return !!u&&chatContacts().some(c=>String(c.id)===String(u.id));
+  }
+  return false;
+}
+function chatRoomMeta(room){
+  const g=chatGroups().find(x=>x.id===room);
+  if(g)return g;
+  const c=chatContacts().find(x=>x.room===room);
+  if(c)return {id:c.room,name:c.name,sub:rLbl(c.role),icon:CHAT_ROLE_ICON[c.role]||'👤',role:c.role,user:c};
+  return {id:room,name:'محادثة',sub:'',icon:'💬'};
+}
+function chatOnlineSet(){
+  const set=new Set();
+  try{
+    Object.values(CHAT.presence||{}).forEach(arr=>{
+      if(Array.isArray(arr))arr.forEach(p=>{if(p&&p.user_id!=null)set.add(String(p.user_id));});
+    });
+  }catch(e){}
+  return set;
+}
+function chatIsOnline(id){return chatOnlineSet().has(String(id));}
+function chatStore(m,noSave){
+  if(!m||!m.room||m.id==null)return false;
+  const arr=CHAT.msgs[m.room]||(CHAT.msgs[m.room]=[]);
+  if(arr.some(x=>String(x.id)===String(m.id)))return false;
+  arr.push({id:String(m.id),room:String(m.room),from:m.from,name:m.name||'مستخدم',
+    role:m.role||'',text:String(m.text||'').slice(0,2000),ts:Number(m.ts)||Date.now()});
+  arr.sort((a,b)=>Number(a.ts)-Number(b.ts));
+  if(arr.length>300)arr.splice(0,arr.length-300);
+  if(!noSave)chatSave();
+  return true;
+}
+function chatRowId(){return Date.now()*1000+Math.floor(Math.random()*1000);}
+function chatDbHasId(id){
+  return gChatRows().some(r=>{
+    try{return String((JSON.parse(r.reason||'{}')||{}).id)===String(id);}catch(e){return false;}
+  });
+}
+async function chatPersist(m){
+  if(!cu||!m)return false;
+  if(chatDbHasId(m.id))return true;
+  const row={id:chatRowId(),requester_id:m.from||cu.id,target_role:'chat',target_id:null,type:'chat',
+    reason:JSON.stringify({v:1,id:m.id,room:m.room,from:m.from,name:m.name,role:m.role,text:m.text,ts:m.ts}),
+    from_date:new Date(m.ts||Date.now()).toISOString().slice(0,10),to_date:null,status:'sent',
+    reviewer_name:null,date:new Date(m.ts||Date.now()).toLocaleString('ar-EG')};
+  try{
+    const {error}=await sb.from('requests').insert(row);
+    if(error){console.warn('chat persist:',error.message);return false;}
+    CACHE.requests=[...(CACHE.requests||[]),row];
+    return true;
+  }catch(e){console.warn('chat persist:',e);return false;}
+}
+function chatLoadDb(){
+  gChatRows().forEach(r=>{
+    try{
+      const p=JSON.parse(r.reason||'{}');
+      if(p&&p.room&&p.text!=null&&chatRoomAllowed(p.room))chatStore(p,true);
+    }catch(e){}
+  });
+  chatSave();updateChatBadge();
+  if(document.getElementById('chatList')){chatRenderList();chatRenderRoom();}
+}
+async function chatRefreshDb(){
+  try{
+    const {data,error}=await sb.from('requests').select('*').eq('type','chat').order('id',{ascending:false}).limit(1000);
+    if(error){console.warn('chat history:',error.message);return;}
+    CACHE.requests=[...(CACHE.requests||[]).filter(r=>r.type!=='chat'),...(data||[]).slice().reverse()];
+    chatLoadDb();
+  }catch(e){console.warn('chat history:',e);}
+}
+function chatUnread(room){
+  if(!cu)return 0;
+  const last=Number(CHAT.lastRead[room]||0);
+  return (CHAT.msgs[room]||[]).filter(m=>String(m.from)!==String(cu.id)&&Number(m.ts)>last).length;
+}
+function chatUnreadTotal(){
+  if(!cu)return 0;
+  return Object.keys(CHAT.msgs).reduce((n,r)=>n+(chatRoomAllowed(r)?chatUnread(r):0),0);
+}
+function updateChatBadge(){
+  const n=cu?chatUnreadTotal():0;
+  const b=document.getElementById('chatTabBadge');
+  if(b){b.textContent=n>99?'99+':String(n);b.classList.toggle('show',n>0);}
+}
+function chatSetFilter(v){CHAT.filter=v||'';chatRenderList();}
+function chatSetStatus(){
+  const e=document.getElementById('chatStatus');if(!e)return;
+  e.textContent=CHAT.online?'🟢 متصل الآن':'🟠 جارٍ الاتصال...';
+}
+function chatGroupTitle(t){return `<div class="chat-group-title">${esc(t)}</div>`;}
+function chatRenderList(){
+  const box=document.getElementById('chatList');if(!box||!cu)return;
+  const q=(CHAT.filter||'').trim().toLowerCase();
+  const on=chatOnlineSet();
+  const groups=chatGroups().filter(g=>!q||g.name.toLowerCase().includes(q)||String(g.sub||'').toLowerCase().includes(q));
+  const contacts=chatContacts().filter(c=>!q||c.name.toLowerCase().includes(q)||rLbl(c.role).toLowerCase().includes(q));
+  contacts.sort((a,b)=>(on.has(String(b.id))?1:0)-(on.has(String(a.id))?1:0)||a.name.localeCompare(b.name,'ar'));
+  const row=(id,name,sub,icon,online)=>{
+    const u=chatUnread(id),msgs=CHAT.msgs[id]||[],last=msgs[msgs.length-1];
+    const preview=last?(' · '+String(last.text||'').replace(/\n/g,' ').slice(0,24)):'';
+    return `<div class="chat-item ${CHAT.room===id?'active':''}" onclick="chatOpenRoom('${id}')">
+      <div class="chat-av">${icon}${online?'<span class="on"></span>':''}</div>
+      <div style="min-width:0;flex:1">
+        <div class="chat-nm">${esc(name)}</div>
+        <div class="chat-sub">${esc(sub)}${esc(preview)}</div>
+      </div>
+      ${u?`<span class="chat-badge">${u>99?'99+':u}</span>`:''}
+    </div>`;
+  };
+  let html='';
+  if(groups.length){
+    html+=chatGroupTitle('المجموعات');
+    html+=groups.map(g=>row(g.id,g.name,g.sub,g.icon,on.size>0)).join('');
+  }
+  if(contacts.length){
+    html+=chatGroupTitle('المحادثات');
+    html+=contacts.map(c=>row(c.room,c.name,rLbl(c.role),CHAT_ROLE_ICON[c.role]||'👤',on.has(String(c.id)))).join('');
+  }
+  box.innerHTML=html||'<div class="chat-empty">لا توجد محادثات متاحة</div>';
+}
+function chatRenderHead(){
+  const head=document.getElementById('chatHead');if(!head)return;
+  if(!CHAT.room||!chatRoomAllowed(CHAT.room)){
+    head.innerHTML='<div class="chat-empty" style="padding:.3rem">اختر محادثة من القائمة</div>';return;
+  }
+  const meta=chatRoomMeta(CHAT.room),t=CHAT.typing[CHAT.room];
+  const typing=(t&&Date.now()-t.ts<5000&&String(t.from)!==String(cu.id))
+    ?`✍️ ${esc(t.name)} يكتب الآن...`:'';
+  const online=meta.user?chatIsOnline(meta.user.id):chatOnlineSet().size>0;
+  head.innerHTML=`<div class="chat-av">${meta.icon}${online?'<span class="on"></span>':''}</div>
+    <div style="min-width:0">
+      <div class="chat-nm">${esc(meta.name)}</div>
+      <div class="chat-status">${typing?`<span class="chat-typing">${typing}</span>`:(online?'🟢 متصل الآن':'⚪ غير متصل')}${meta.user?' · '+esc(rLbl(meta.role)):''}</div>
+    </div>`;
+}
+function chatRenderRoom(){
+  const box=document.getElementById('chatMsgs');if(!box)return;
+  chatRenderHead();
+  if(!CHAT.room||!chatRoomAllowed(CHAT.room)){
+    box.innerHTML='<div class="chat-empty">اختر محادثة لبدء التواصل 💬</div>';return;
+  }
+  const msgs=CHAT.msgs[CHAT.room]||[];
+  if(!msgs.length){box.innerHTML='<div class="chat-empty">لا توجد رسائل بعد — اكتب أول رسالة 👋</div>';return;}
+  let lastD='';
+  box.innerHTML=msgs.map(m=>{
+    const d=new Date(m.ts||Date.now());
+    const dk=d.toLocaleDateString('ar-QA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    let sep='';if(dk!==lastD){lastD=dk;sep=`<div class="chat-date">${esc(dk)}</div>`;}
+    const mine=String(m.from)===String(cu.id);
+    const time=d.toLocaleTimeString('ar-QA',{hour:'2-digit',minute:'2-digit'});
+    return sep+`<div class="msg ${mine?'me':'other'}">
+      ${mine?'':`<div class="mh">${esc(m.name||'مستخدم')} · ${esc(rLbl(m.role))}</div>`}
+      <div>${esc(m.text||'').replace(/\n/g,'<br>')}</div>
+      <div class="mt">${esc(time)}</div>
+    </div>`;
+  }).join('');
+  setTimeout(()=>{box.scrollTop=box.scrollHeight;},30);
+}
+function chatInitView(){
+  if(!document.getElementById('chatList'))return;
+  if(!CHAT.room||!chatRoomAllowed(CHAT.room)){
+    const all=chatAllRooms();
+    const unread=all.find(r=>chatUnread(r.id)>0);
+    CHAT.room=(unread||all[0]||{}).id||null;
+  }
+  if(CHAT.room){CHAT.lastRead[CHAT.room]=Date.now();chatSave();}
+  chatRenderList();chatRenderRoom();chatSetStatus();updateChatBadge();
+}
+function chatOpenRoom(id){
+  if(!chatRoomAllowed(id))return;
+  CHAT.room=id;CHAT.lastRead[id]=Date.now();chatSave();
+  chatRenderList();chatRenderRoom();updateChatBadge();
+}
+function chatTyping(){
+  if(!cu||!CHAT.room||!CHAT.online||!CHAT.channel)return;
+  const now=Date.now();if(now-(CHAT.lastTyping||0)<1200)return;CHAT.lastTyping=now;
+  try{CHAT.channel.send({type:'broadcast',event:'typing',
+    payload:{room:CHAT.room,from:cu.id,name:cu.name,ts:now}});}catch(e){}
+}
+function chatKey(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}
+}
+function chatOnMsg(payload){
+  if(!cu||!payload||!payload.room||!chatRoomAllowed(payload.room))return;
+  if(String(payload.from)===String(cu.id))return;
+  chatStore(payload);
+  if(CHAT.room===payload.room&&document.getElementById('chatMsgs')){
+    CHAT.lastRead[payload.room]=Date.now();chatSave();
+    chatRenderRoom();chatRenderList();updateChatBadge();
+  }else{
+    chatRenderList();updateChatBadge();
+  }
+}
+function chatOnTyping(p){
+  if(!cu||!p||!p.room||!chatRoomAllowed(p.room)||String(p.from)===String(cu.id))return;
+  CHAT.typing[p.room]={name:p.name||'مستخدم',from:p.from,ts:Date.now()};
+  if(CHAT.room===p.room)chatRenderHead();
+}
+function chatFlushOutbox(){
+  if(!CHAT.online||!CHAT.channel||!CHAT.outbox.length)return;
+  const pending=CHAT.outbox.slice();CHAT.outbox=[];chatSave();
+  pending.forEach(m=>{
+    chatPersist(m);
+    try{
+      Promise.resolve(CHAT.channel.send({type:'broadcast',event:'msg',payload:m}))
+        .catch(()=>{CHAT.outbox.push(m);chatSave();});
+    }catch(e){CHAT.outbox.push(m);chatSave();}
+  });
+}
+function sendChat(){
+  if(!cu||!CHAT.room||!chatRoomAllowed(CHAT.room)){toast('اختر محادثة أولاً',true);return;}
+  const ta=document.getElementById('chatText');if(!ta)return;
+  const text=ta.value.trim();if(!text)return;
+  const m={id:String(Date.now())+'-'+String(cu.id)+'-'+Math.random().toString(36).slice(2,6),
+    room:CHAT.room,from:cu.id,name:cu.name,role:cu.role,text:text.slice(0,2000),ts:Date.now()};
+  chatStore(m);ta.value='';CHAT.lastRead[CHAT.room]=m.ts;chatSave();
+  chatPersist(m);
+  if(CHAT.online&&CHAT.channel){
+    try{
+      Promise.resolve(CHAT.channel.send({type:'broadcast',event:'msg',payload:m}))
+        .catch(()=>{CHAT.outbox.push(m);chatSave();});
+    }catch(e){CHAT.outbox.push(m);chatSave();}
+  }else{
+    CHAT.outbox.push(m);chatSave();toast('تم حفظ الرسالة وسيتم إرسالها عند عودة الاتصال');
+  }
+  chatRenderRoom();chatRenderList();updateChatBadge();
+}
+function chatUpdatePresence(){
+  chatSetStatus();
+  if(document.getElementById('chatList')){chatRenderList();chatRenderHead();}
+}
+function chatLeave(){
+  if(CHAT.channel){try{CHAT.channel.unsubscribe();}catch(e){}CHAT.channel=null;}
+  if(CHAT.timer){clearInterval(CHAT.timer);CHAT.timer=null;}
+  CHAT.online=false;CHAT.presence={};CHAT.typing={};CHAT.room=null;CHAT.lastTyping=0;
+}
+async function initChat(){
+  if(!cu)return;
+  chatLoad();chatLoadDb();
+  if(!CHAT.channel){
+    try{
+      const ch=sb.channel(CHAT_CHANNEL,{config:{broadcast:{self:false},presence:{key:String(cu.id)}}});
+      ch.on('broadcast',{event:'msg'},({payload})=>chatOnMsg(payload));
+      ch.on('broadcast',{event:'typing'},({payload})=>chatOnTyping(payload));
+      ch.on('presence',{event:'sync'},()=>{CHAT.presence=ch.presenceState();chatUpdatePresence();});
+      ch.on('presence',{event:'join'},()=>{CHAT.presence=ch.presenceState();chatUpdatePresence();});
+      ch.on('presence',{event:'leave'},()=>{CHAT.presence=ch.presenceState();chatUpdatePresence();});
+      ch.subscribe(async(status)=>{
+        CHAT.online=status==='SUBSCRIBED';
+        if(CHAT.online){
+          try{await ch.track({user_id:cu.id,name:cu.name,role:cu.role,online_at:new Date().toISOString()});}catch(e){}
+          chatRefreshDb();
+          chatFlushOutbox();
+        }
+        chatSetStatus();
+      });
+      CHAT.channel=ch;
+    }catch(e){console.warn('chat init:',e);}
+  }
+  if(!CHAT.timer){
+    CHAT.timer=setInterval(()=>{
+      let dirty=false;
+      Object.keys(CHAT.typing).forEach(r=>{
+        if(Date.now()-CHAT.typing[r].ts>5000){delete CHAT.typing[r];if(CHAT.room===r)dirty=true;}
+      });
+      if(dirty)chatRenderHead();
+    },2500);
+  }
+  chatSetStatus();updateChatBadge();
+}
+function renderChat(){
+  if(!cu)return '';
+  const isStudent=cu.role==='student';
+  return `<h2>💬 الدردشة</h2>
+    <div class="info" style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap">
+      <span>💬 تواصل مباشر ${isStudent?'مع معلمك وزملائك والكادر':'بين الكادر التعليمي والطلاب'} — الرسائل تصل فوراً ويُحفظ السجل تلقائياً.</span>
+      <span class="chat-status" id="chatStatus">${CHAT.online?'🟢 متصل الآن':'🟠 جارٍ الاتصال...'}</span>
+    </div>
+    <div class="chat-wrap">
+      <aside class="chat-side">
+        <div class="chat-search"><input id="chatSearch" placeholder="🔍 ابحث عن محادثة..." value="${esc(CHAT.filter)}" oninput="chatSetFilter(this.value)"></div>
+        <div class="chat-list" id="chatList"></div>
+      </aside>
+      <section class="chat-main">
+        <div class="chat-head" id="chatHead"></div>
+        <div class="chat-msgs" id="chatMsgs"></div>
+        <div class="chat-input">
+          <textarea id="chatText" placeholder="اكتب رسالتك هنا... (Enter للإرسال)" oninput="chatTyping()" onkeydown="chatKey(event)"></textarea>
+          <button class="btn" onclick="sendChat()">إرسال ➤</button>
+        </div>
+      </section>
+    </div>`;
+}
 
 /* ============ INIT ============ */
 async function init(){
   try{
+    initDragPanels();
     applyAll(CFG);
     await loadAll();
     await seed();
