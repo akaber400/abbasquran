@@ -63,6 +63,22 @@ flex-wrap:wrap;gap:0.5rem}
 .logo p{font-size:0.625rem;opacity:.85}
 .hd{display:flex;align-items:center;gap:0.375rem;flex-wrap:wrap;font-size:0.6875rem}
 .uc{background:rgba(255,255,255,.15);padding:0.1875rem 0.5rem;border-radius:0.875rem}
+.gs-wrap{display:flex;gap:0.375rem;margin-bottom:0.5rem}
+.gs-wrap input{flex:1}
+.gs-count{font-size:0.6875rem;color:var(--muted);margin-bottom:0.375rem}
+.gs-item{display:flex;align-items:center;justify-content:space-between;gap:0.5rem;background:#fff;
+border:1px solid var(--border);border-right:0.25rem solid var(--gold);border-radius:0.5rem;padding:0.5rem 0.625rem;
+margin-bottom:0.375rem;cursor:pointer;transition:.15s}
+.gs-item:hover{background:#FAF8F3;border-color:var(--gold);transform:translateX(-1px)}
+.gsi-main{min-width:0}
+.gsi-name{font-family:'Amiri';font-weight:700;color:var(--green);font-size:0.8125rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gsi-meta{font-size:0.625rem;color:var(--muted);margin-top:1px;line-height:1.5}
+.gsi-role{font-size:0.5938rem;padding:2px 0.4375rem;border-radius:0.625rem;background:#E6F2EE;color:var(--green);white-space:nowrap;flex:none}
+.gsi-role.teacher{background:#E6EEF7;color:#2A5C8A}
+.gsi-role.supervisor{background:#FBF3DD;color:#9A7B1A}
+.gsi-role.admin{background:#F3E8FF;color:#6B3FA0}
+.gsi-role.student{background:#E6F2EE;color:var(--green)}
+.gs-section{font-family:'Amiri';font-size:0.8125rem;color:var(--green);margin:0.5rem 0 0.375rem}
 .tabs{background:#fff;border-bottom:1px solid var(--border);padding:0 1.125rem;display:flex;gap:2px;
 overflow-x:auto;box-shadow:0 1px 0.25rem rgba(0,0,0,.04);margin-bottom:0.625rem}
 .tab{background:none;border:none;padding:0.5625rem 0.875rem;cursor:pointer;font-family:inherit;font-size:0.75rem;
@@ -674,6 +690,7 @@ background:linear-gradient(160deg,var(--deep),var(--deep2));padding:.6rem;box-sh
   <div class="logo"><div class="logo-i">📖</div>
     <div><h1 class="brand-gold">منصة العباسي</h1><p>لإدارة حلقات تحفيظ القرآن الكريم</p><div class="hn" id="hdrName">—</div></div></div>
   <div class="hd">
+    <button class="btn sm ghost" id="globalSearchBtn" style="color:#fff;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.6)" onclick="openGlobalSearch()">🔍 بحث شامل</button>
     <span id="hdrDate">—</span>
     <span class="uc" id="userChip">—</span>
     <button class="btn sm ghost" style="color:#fff;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.6)" onclick="doLogout()">خروج</button>
@@ -915,6 +932,16 @@ function statusOn(sid,d){
   if(recOnDate(sid,d))return 'present';
   const a=gA().find(x=>x.student_id===sid&&x.date===d);
   return a?a.status:'absent';
+}
+function dayAttendanceLists(list,d){
+  const p=list.filter(s=>statusOn(s.id,d)==='present');
+  const a=list.filter(s=>isAbsStatus(statusOn(s.id,d)));
+  const chip=(arr,cls)=>arr.length?arr.map(s=>`<span class="badge ${cls}" style="margin:1px;display:inline-block">${esc(s.name)}</span>`).join(''):'<span class="empty" style="display:inline-block;padding:3px 8px">لا يوجد</span>';
+  return `<div class="card"><h3>📅 حضور اليوم — ${fmtD(d)}</h3>
+    <div class="fg">
+      <div><h3 style="font-size:0.75rem;color:var(--present)">✓ قائمة الحضور (${p.length})</h3><div>${chip(p,'present')}</div></div>
+      <div><h3 style="font-size:0.75rem;color:var(--absent)">✗ قائمة الغياب (${a.length})</h3><div>${chip(a,'absent')}</div></div>
+    </div></div>`;
 }
 function circleAbsenceStats(cid,f,t){
   const key='c:'+cid+':'+(f||'')+':'+(t||'');
@@ -1616,6 +1643,7 @@ function enterApp(view){
   document.getElementById('loginWrap').style.display='none';
   document.getElementById('app').classList.add('show');
   document.getElementById('userChip').textContent='👤 '+cu.name+' ('+RN[cu.role]+')';
+  const gsb=document.getElementById('globalSearchBtn');if(gsb)gsb.style.display=cu.role==='student'?'none':'';
   document.getElementById('hdrDate').textContent=fmtD(today());
   document.getElementById('hdrName').textContent=cu.name;
   const v0=renderTabs(view||'overview');renderView(v0);
@@ -1947,6 +1975,15 @@ function openCircle(id){
   const canEdit=can('manage_circles');
   const canPromote=['admin','supervisor'].includes(cu.role)&&can('manage_students');
   const abs=circleAbsenceStats(id);
+  const impBox=can('import_export')&&can('manage_students')?`<div class="iz" style="margin-top:10px;text-align:right">
+    <div style="font-size:0.6875rem;color:var(--muted);margin-bottom:6px">📤 استيراد طلاب إلى هذه الحلقة من ملف Excel — استخدم قالب الحلقة للتوافق الكامل.</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">
+      <label class="btn excel" style="cursor:pointer">📂 اختيار ملف Excel
+        <input type="file" class="fi" accept=".xlsx,.xls" onchange="circleStudentImport(event,${id})"></label>
+      <button class="btn ghost" onclick="dlCircleStudentsTpl(${id})">📥 قالب طلاب الحلقة</button>
+    </div>
+    <div id="circleImportPrev" style="margin-top:8px"></div>
+  </div>`:'';
   document.getElementById('modalContent').innerHTML=`
     <div class="ab2"><h3>🎯 ${esc(c.name)}</h3>
       <button class="btn print sm no-print" onclick="openPrintOptions('circle')">🖨️ طباعة الكشف</button></div>
@@ -1955,7 +1992,7 @@ function openCircle(id){
     <b>المدرس:</b> ${t?esc(t.name):'—'} | <b>المشرف:</b> ${s?esc(s.name):'—'}<br>
     <b>الجدول:</b> ${esc(c.schedule||'—')} | <b>المكان:</b> ${esc(c.location||'—')}</div>
     ${students.length?`<div class="card"><h3>👦 الطلاب (${students.length})</h3>
-      <table><thead><tr><th>الاسم</th><th>الموضع</th><th>تسميعات</th><th>الغياب</th><th>حضور اليوم</th><th>إجراءات</th></tr></thead>
+      <table><thead><tr><th>الاسم</th><th>الموضع</th><th>تسميعات</th><th>حضور اليوم</th><th>الغياب</th><th>إجراءات</th></tr></thead>
       <tbody>${students.map(st=>{
         const sr=R.filter(r=>r.student_id===st.id);
         const stt=statusOn(st.id,T);
@@ -1963,17 +2000,18 @@ function openCircle(id){
         return `<tr>
         <td><b>${esc(st.name)}</b></td><td>${sName(st.cur_surah)}:${st.cur_ayah}</td>
         <td>${sr.length}</td>
-        <td><span class="abs-chip ${nAbs?'':'ok'}" title="الغياب المحتسب: لم يسمّع في أيام الحلقة">✗ ${nAbs}</span></td>
         <td><span class="badge ${stt}">${sLbl(stt)}</span></td>
+        <td><span class="abs-chip ${nAbs?'':'ok'}" title="الغياب المحتسب: لم يسمّع في أيام الحلقة">✗ ${nAbs}</span></td>
         <td><button class="btn gold sm" title="تقرير الطالب" onclick="closeModal();openStudentReport(${st.id},today().slice(0,7)+'-01',today())">📖</button>
         ${can('manage_students')?`<button class="btn sm" onclick="closeModal();editStudent(${st.id})">✏️</button>`:''}
         ${canPromote?`<button class="btn promote sm" title="ترقية إلى مرحلة أعلى" onclick="promoteStudent(${st.id})">⬆️</button>`:''}</td>
         </tr>`;}).join('')}</tbody></table>
-      ${can('manage_students')?`<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
-      <button class="btn" onclick="closeModal();addStudentToCircle(${id})">➕ إضافة طالب</button>
+      <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+      ${can('manage_students')?`<button class="btn" onclick="closeModal();addStudentToCircle(${id})">➕ إضافة طالب</button>`:''}
       ${canPromote?`<button class="btn promote" onclick="promoteCircleStudents(${id})">⬆️ ترقية طلاب الحلقة</button>`:''}
-      </div>`:''}
-      </div>`:'<div class="empty">لا طلاب في هذه الحلقة</div>'}
+      </div>
+      ${impBox}
+      </div>`:`<div class="card"><h3>👦 الطلاب (0)</h3><div class="empty">لا طلاب في هذه الحلقة</div>${impBox}</div>`}
     ${canEdit?`<div style="margin-top:8px;display:flex;gap:6px" class="no-print">
     <button class="btn ghost" onclick="closeModal();editCircle(${id})">✏️ تعديل الحلقة</button>
     <button class="btn danger" onclick="closeModal();delCircle(${id})">🗑 حذف الحلقة</button>
@@ -2055,7 +2093,7 @@ function renderStudents(){
   const role=cu.role;
   if(role==='supervisor'||role==='admin'){
     const S=gS().slice().sort((a,b)=>a.name.localeCompare(b.name,'ar'));
-    const U=gU(),C=gC(),R=gR();
+    const U=gU(),C=gC(),R=gR(),T=today();
     const grouped=window.__stView!=='alpha';
     const canPromote=['admin','supervisor'].includes(role)&&can('manage_students');
     const pw=can('view_passwords');
@@ -2064,9 +2102,11 @@ function renderStudents(){
       const acc=U.find(u=>u.role==='student'&&u.student_id===s.id);
       const lr=R.filter(r=>r.student_id===s.id).sort((a,b)=>b.date.localeCompare(a.date))[0];
       const nAbs=studentAbsenceStats(s.id).count;
+      const stt=statusOn(s.id,T);
       return `<tr>${numbered?`<td>${i+1}</td>`:''}<td><b>${esc(s.name)}</b></td>
       <td>${c?esc(c.name):'—'}</td><td>${t?esc(t.name):'—'}</td>
       <td>${lr?`${fmtS(lr.date)} <span class="badge ${lr.grade}">${gLbl(lr.grade)}</span>`:'—'}</td>
+      <td><span class="badge ${stt}">${sLbl(stt)}</span></td>
       <td><span class="abs-chip ${nAbs?'':'ok'}" title="الغياب المحتسب: لم يسمّع في أيام الحلقة">✗ ${nAbs}</span></td>
       <td><code dir="ltr">${acc?acc.username:'—'}</code></td>${pw?`<td><code>${acc?acc.password:'—'}</code></td>`:''}
       <td><button class="btn gold sm" title="تقرير الطالب" onclick="openStudentReport(${s.id},today().slice(0,7)+'-01',today())">📖</button>
@@ -2074,7 +2114,7 @@ function renderStudents(){
       ${canPromote?`<button class="btn promote sm" title="ترقية إلى مرحلة أعلى" onclick="promoteStudent(${s.id})">⬆️</button>`:''}
       ${can('manage_students')?`<button class="btn danger sm" onclick="delStudent(${s.id})">🗑</button>`:''}</td></tr>`;
     }).join('');
-    const tableFor=(list,numbered)=>list.length?`<table><thead><tr>${numbered?'<th>#</th>':''}<th>الاسم</th><th>الحلقة</th><th>الشيخ</th><th>آخر تسميع</th><th>الغياب</th><th>المستخدم</th>${pw?'<th>المرور</th>':''}<th>إجراءات</th></tr></thead>
+    const tableFor=(list,numbered)=>list.length?`<table><thead><tr>${numbered?'<th>#</th>':''}<th>الاسم</th><th>الحلقة</th><th>الشيخ</th><th>آخر تسميع</th><th>حضور اليوم</th><th>الغياب</th><th>المستخدم</th>${pw?'<th>المرور</th>':''}<th>إجراءات</th></tr></thead>
       <tbody>${rowsFor(list,numbered)}</tbody></table>`:'<div class="empty">لا طلاب</div>';
     let groups='';
     if(grouped){
@@ -2100,6 +2140,7 @@ function renderStudents(){
       if(!C.length&&!un.length)groups='<div class="empty">لا حلقات ولا طلاب</div>';
     }
     return `<h2>👦 الطلاب (${S.length})</h2>
+      ${dayAttendanceLists(S,T)}
       <div class="card">
       <div class="ab2"><h3>📋 القائمة</h3>
       <div class="acts">
@@ -2122,6 +2163,7 @@ function renderStudents(){
   const sel=window.__selDate,isT=sel===T;
   const getAtt=(id)=>statusOn(id,sel);
   return `<h2>👦 طلابي (${S.length})</h2>
+    ${dayAttendanceLists(S,T)}
     <div class="card" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
     <label style="margin:0">📅 التاريخ:</label>
     <input type="date" value="${sel}" style="width:auto;padding:5px" onchange="window.__selDate=this.value;renderView('students')">
@@ -2242,6 +2284,11 @@ function renderSheet(){
   const T=today();
   const ta=gA().find(a=>a.student_id===curSid&&a.date===T);
   const tS=ta?ta.status:'absent';
+  const attSum=studentAttendanceStats(curSid);
+  const allDays=_studentSessionDates(curSid);
+  const pDays=allDays.filter(d=>statusOn(curSid,d)==='present').sort().reverse();
+  const aDays=allDays.filter(d=>isAbsStatus(statusOn(curSid,d))).sort().reverse();
+  const dateChips=(arr,n,cls)=>arr.length?arr.slice(0,n).map(d=>`<span class="badge ${cls||'present'}" style="margin:1px">${fmtS(d)}</span>`).join(''):'<span class="empty" style="display:inline-block;padding:3px 8px">لا يوجد</span>';
   let rFS=1,rFA=1,rTS=1,rTA=7;
   if(last){rFS=last.to_surah;rFA=last.to_ayah;rTS=last.to_surah;
     const mx=sMax(last.to_surah);rTA=Math.min(mx,last.to_ayah+5);
@@ -2253,6 +2300,13 @@ function renderSheet(){
     <div class="mst"><div class="n">${recs.reduce((x,r)=>x+cntA(r.from_surah,r.from_ayah,r.to_surah,r.to_ayah),0)}</div><div class="l">آيات</div></div>
     <div class="mst" style="background:${tS==='present'?'#E6F2EE':tS==='absent'?'#FBE9E9':'#FBF3DD'}">
     <div class="n">${sLbl(tS)}</div><div class="l">حالة اليوم</div></div>
+    </div>
+    <div class="card"><h3>📅 سجل الحضور والغياب <small style="font-weight:400;color:var(--muted)">(${attSum.present} حضور • ${attSum.absent} غياب)</small></h3>
+      <div class="fg">
+        <div><h3 style="font-size:0.75rem;color:var(--present)">✓ قائمة الحضور (${pDays.length})</h3>${dateChips(pDays,8,'present')}</div>
+        <div><h3 style="font-size:0.75rem;color:var(--absent)">✗ قائمة الغياب (${aDays.length})</h3>${dateChips(aDays,8,'absent')}</div>
+      </div>
+      <div style="margin-top:6px"><button class="btn ghost sm" onclick="openStudentReport(${curSid},'${allDays[0]||'2000-01-01'}','${T}')">📋 عرض الكشف الكامل</button></div>
     </div>
     ${canEdit?`<div class="rf">
     <h3>📖 تسجيل تسميع</h3>
@@ -2697,6 +2751,16 @@ function dlStudentTpl(){
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Template');
   XLSX.writeFile(wb,'قالب-الطلاب.xlsx');toast('✓');
 }
+function dlCircleStudentsTpl(cid){
+  const c=gC().find(x=>x.id===cid);
+  const t=c?gU().find(u=>u.id===c.teacher_id):null;
+  const h=['name','nationality','nationalId','parent','email','username','password','teacherUsername','circleName','plan'];
+  const r=[['طالب','قطري','280000000020','+97455555520','s1@abbasi.qa','s1','s123',t?t.username:'',c?c.name:'','حفظ جزء عم']];
+  const ws=XLSX.utils.aoa_to_sheet([h,...r]);
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Template');
+  const nm=(c?c.name:'الحلقة').replace(/[\\/:*?"<>|]/g,'-');
+  XLSX.writeFile(wb,'قالب-طلاب-'+nm+'.xlsx');toast('✓');
+}
 function expRole(role){
   const U=gU().filter(u=>u.role===role);
   const data=U.map(u=>[u.name,u.nationality||'',u.national_id||'',u.phone||'',u.email||'',u.username,u.password]);
@@ -2794,6 +2858,60 @@ async function confirmImp(){
   renderView(role==='student'?'students':role==='teacher'?'teachers':role==='supervisor'?'supervisors':'admins');
 }
 
+/* استيراد طلاب داخل حلقة محددة */
+function circleStudentImport(e,cid){
+  const file=e.target.files[0];if(!file)return;
+  const circle=gC().find(x=>x.id===cid);
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
+      const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+      window.__cImp={rows,cid};
+      const prev=document.getElementById('circleImportPrev');if(!prev)return;
+      if(!rows.length){prev.innerHTML='<div class="empty">لا بيانات في الملف</div>';return;}
+      prev.innerHTML=`<div class="card" style="margin:0"><h3>📋 معاينة الاستيراد (${rows.length} صف)</h3>
+        <div class="info">سيتم إضافة الطلاب إلى حلقة <b>${esc(circle?circle.name:'—')}</b>. يتم تخطي الصفوف بدون اسم أو المكررة بنفس الرقم الشخصي أو اسم المستخدم.</div>
+        <table><thead><tr><th>#</th><th>الاسم</th><th>الرقم الشخصي</th><th>الجوال</th><th>المستخدم</th></tr></thead><tbody>
+        ${rows.slice(0,8).map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.name||'—')}</td><td dir="ltr">${esc(r.nationalId||'—')}</td><td dir="ltr">${esc(r.parent||'—')}</td><td><code dir="ltr">${esc(r.username||'—')}</code></td></tr>`).join('')}
+        </tbody></table>
+        ${rows.length>8?`<div class="info" style="margin-top:6px">… و${rows.length-8} صفاً إضافياً</div>`:''}
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+          <button class="btn excel" onclick="confirmCircleStudentImp()">✓ تأكيد الاستيراد</button>
+          <button class="btn ghost" onclick="document.getElementById('circleImportPrev').innerHTML=''">إلغاء</button>
+        </div></div>`;
+    }catch(err){toast('خطأ في قراءة الملف: '+err.message,true);}
+  };
+  reader.readAsArrayBuffer(file);
+}
+async function confirmCircleStudentImp(){
+  const {rows,cid}=window.__cImp||{};
+  if(!rows||!rows.length){toast('لا بيانات',true);return;}
+  const c=gC().find(x=>x.id===cid);if(!c){toast('الحلقة غير موجودة',true);return;}
+  const str=v=>(v==null?'':v).toString().trim();
+  let add=0,skip=0;
+  for(const r of rows){
+    const N=str(r.name);
+    if(!N){skip++;continue;}
+    const nid=str(r.nationalId),uname=str(r.username),pass=str(r.password);
+    if(nid&&gS().some(s=>s.circle_id===cid&&str(s.national_id)===nid)){skip++;continue;}
+    if(uname&&gU().some(u=>u.username===uname)){skip++;continue;}
+    const rowT=gU().find(u=>u.username===str(r.teacherUsername)&&u.role==='teacher');
+    const teacher_id=rowT?rowT.id:c.teacher_id;
+    const sid=newId();
+    const ok=await DB.saveStudent({id:sid,name:N,nationality:str(r.nationality),national_id:nid,
+      parent:str(r.parent),email:str(r.email),teacher_id,circle_id:cid,
+      cur_surah:1,cur_ayah:1,plan:str(r.plan)});
+    if(!ok){skip++;continue;}
+    if(uname&&pass){
+      await DB.saveUser({id:newId(),username:uname,password:pass,name:N,role:'student',student_id:sid,
+        nationality:str(r.nationality),national_id:nid,phone:str(r.parent),email:str(r.email)});
+    }
+    add++;
+  }
+  toast(`✓ تم استيراد ${add} طالباً${skip?` — تخطي ${skip}`:''}`);
+  closeModal();openCircle(cid);
+}
 
 function expReport(){
   const {f,t,l}=getRange();
@@ -2979,6 +3097,28 @@ function openStudentReport(sid,from,to){
     <div class="mst"><div class="n" style="color:var(--present)">${att.present}</div><div class="l">حضور</div></div>
     <div class="mst"><div class="n" style="color:var(--absent)">${att.absent}</div><div class="l">غياب</div></div>
     </div>
+    ${(()=>{
+      const days=_studentSessionDates(sid,from,to);
+      const rows=days.map(d=>{
+        const st=statusOn(sid,d);
+        const dr=recs.filter(r=>r.date===d);
+        const txt=dr.length?dr.map(r=>`${sName(r.from_surah)}:${r.from_ayah} → ${sName(r.to_surah)}:${r.to_ayah}`).join('<br>'):'—';
+        return {d,st,dr,txt};
+      });
+      const pd=rows.filter(x=>x.st==='present');
+      const ed=rows.filter(x=>x.st==='excused');
+      const ad=rows.filter(x=>isAbsStatus(x.st));
+      const dayTable=(list,showRec)=>list.length?`<table><thead><tr><th>التاريخ</th><th>${showRec?'التسميع':'الحالة'}</th></tr></thead><tbody>
+        ${list.map(x=>`<tr><td>${fmtD(x.d)}</td><td>${showRec?x.txt:`<span class="badge ${x.st}">${sLbl(x.st)}</span>`}</td></tr>`).join('')}
+        </tbody></table>`:'<div class="empty">لا يوجد</div>';
+      return `<div class="card"><h3>📅 سجل الحضور والغياب</h3>
+        <div class="fg">
+          <div><h3 style="font-size:0.75rem;color:var(--present)">✓ قائمة الحضور (${pd.length})</h3>${dayTable(pd,true)}</div>
+          <div><h3 style="font-size:0.75rem;color:var(--absent)">✗ قائمة الغياب (${ad.length})</h3>${dayTable(ad,false)}</div>
+        </div>
+        ${ed.length?`<div style="margin-top:8px"><h3 style="font-size:0.75rem;color:#9A7B1A">🟡 الاستئذان (${ed.length})</h3>${dayTable(ed,false)}</div>`:''}
+      </div>`;
+    })()}
     <div class="card"><h3>📅 السجل اليومي التفصيلي</h3>
     <table><thead><tr><th>التاريخ</th><th>من</th><th>إلى</th><th>آيات</th><th>صفحات</th><th>تقييم</th><th>مصحف</th></tr></thead>
     <tbody>${recs.length?recs.map(r=>{
@@ -2993,6 +3133,110 @@ function openStudentReport(sid,from,to){
       <td><button class="btn gold sm" onclick="openSurahApp(${r.from_surah},${r.from_ayah})">📖 فتح</button></td>
       </tr>`;}).join(''):'<tr><td colspan="7" class="empty">لا تسميعات في هذه الفترة</td></tr>'}</tbody></table>
     </div>`;
+  document.getElementById('modalBg').classList.add('show');
+}
+
+/* ============ البحث الشامل ============ */
+function gsNorm(v){
+  let s=String(v==null?'':v).toLowerCase().trim();
+  s=s.replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');
+  s=s.replace(/[\u064B-\u0652\u0640]/g,'');
+  s=s.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+  s=s.replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+  return s.replace(/[\s\-_()+]/g,'');
+}
+function gsPersonRows(q){
+  const nq=gsNorm(q);
+  if(nq.length<2)return {users:[],students:[]};
+  const U=gU(),S=gS();
+  const users=U.filter(u=>u.role!=='student'&&[u.name,u.national_id,u.phone,u.email,u.username].some(v=>gsNorm(v).includes(nq)));
+  const students=S.filter(s=>{
+    const a=U.find(u=>u.role==='student'&&u.student_id===s.id);
+    return [s.name,s.national_id,s.parent,s.email,s.phone,a&&a.username,a&&a.phone,a&&a.national_id].some(v=>gsNorm(v).includes(nq));
+  });
+  return {users,students};
+}
+function openGlobalSearch(){
+  document.getElementById('modalContent').innerHTML=`
+    <h3>🔍 البحث الشامل</h3>
+    <div class="info">ابحث بالاسم أو الرقم الشخصي أو رقم الجوال. تظهر البطاقة الكاملة للموظف، وللطالب كشف الحضور والغياب والتسميع.</div>
+    <div class="gs-wrap"><input id="gsQ" placeholder="اكتب الاسم أو الرقم الشخصي أو رقم الجوال…" oninput="gsRun()" autocomplete="off">
+    <button class="btn" onclick="gsRun()">🔍 بحث</button></div>
+    <div id="gsResults"><div class="empty">اكتب حرفين على الأقل للبحث…</div></div>`;
+  document.getElementById('modalBg').classList.add('show');
+  setTimeout(()=>{const i=document.getElementById('gsQ');if(i)i.focus();},80);
+}
+function gsRun(){
+  const q=(document.getElementById('gsQ')||{}).value||'';
+  const box=document.getElementById('gsResults');if(!box)return;
+  if(gsNorm(q).length<2){box.innerHTML='<div class="empty">اكتب حرفين على الأقل للبحث…</div>';return;}
+  const {users,students}=gsPersonRows(q);
+  const total=users.length+students.length;
+  let h=`<div class="gs-count">النتائج: ${total}</div>`;
+  if(!total){box.innerHTML=h+'<div class="empty">لا نتائج مطابقة</div>';return;}
+  if(users.length){
+    h+=`<div class="gs-section">👥 الإدارة والموظفون (${users.length})</div>`;
+    h+=users.map(u=>{
+      const tc=u.role==='teacher'?gS().filter(s=>s.teacher_id===u.id).length:0;
+      const extra=u.role==='teacher'?` • الطلاب: ${tc}`:'';
+      return `<div class="gs-item" onclick="openStaffCard(${u.id})">
+        <div class="gsi-main"><div class="gsi-name">${esc(u.name)}</div>
+        <div class="gsi-meta">${rLbl(u.role)}${extra} • الرقم الشخصي: <span dir="ltr">${esc(u.national_id||'—')}</span> • الجوال: <span dir="ltr">${esc(u.phone||'—')}</span></div></div>
+        <span class="gsi-role ${u.role}">${rLbl(u.role)}</span></div>`;
+    }).join('');
+  }
+  if(students.length){
+    h+=`<div class="gs-section">👦 الطلاب (${students.length})</div>`;
+    h+=students.map(s=>{
+      const c=gC().find(x=>x.id===s.circle_id),t=gU().find(u=>u.id===s.teacher_id);
+      return `<div class="gs-item" onclick="openSearchStudent(${s.id})">
+        <div class="gsi-main"><div class="gsi-name">${esc(s.name)}</div>
+        <div class="gsi-meta">${c?esc(c.name):'بدون حلقة'} • الشيخ: ${t?esc(t.name):'—'} • الرقم الشخصي: <span dir="ltr">${esc(s.national_id||'—')}</span> • الجوال: <span dir="ltr">${esc(s.parent||'—')}</span></div></div>
+        <span class="gsi-role student">طالب</span></div>`;
+    }).join('');
+  }
+  box.innerHTML=h;
+}
+function openSearchStudent(sid){
+  const dates=[...gR().filter(r=>r.student_id===sid).map(r=>r.date),...gA().filter(a=>a.student_id===sid).map(a=>a.date)].sort();
+  const from=dates.length?dates[0]:'2000-01-01';
+  closeModal();openStudentReport(sid,from,today());
+}
+function openStaffCard(uid){
+  const u=gU().find(x=>x.id===uid);if(!u)return;
+  const rows=gStaff().filter(a=>a.user_id===uid).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  const cnt={present:0,absent:0,excused:0,disconnected:0};rows.forEach(a=>{if(cnt[a.status]!==undefined)cnt[a.status]++;});
+  const circles=gC().filter(c=>c.teacher_id===uid||c.supervisor_id===uid);
+  const students=gS().filter(s=>s.teacher_id===uid).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  const vp=can('view_passwords');
+  document.getElementById('modalContent').innerHTML=`
+    <h3>👤 بطاقة ${esc(u.name)}</h3>
+    <div class="no-print" style="margin-bottom:8px"><button class="btn print sm" onclick="printNode(document.getElementById('modalContent'),'بطاقة الموظف',getPrintOpts())">🖨️ طباعة</button></div>
+    <div class="info">
+      <b>الاسم:</b> ${esc(u.name)} | <b>الدور:</b> ${rLbl(u.role)}<br>
+      <b>الجنسية:</b> ${esc(u.nationality||'—')} | <b>الرقم الشخصي:</b> <span dir="ltr">${esc(u.national_id||'—')}</span><br>
+      <b>الجوال:</b> <span dir="ltr">${esc(u.phone||'—')}</span> | <b>البريد:</b> <span dir="ltr">${esc(u.email||'—')}</span><br>
+      <b>اسم المستخدم:</b> <code dir="ltr">${esc(u.username||'—')}</code>${vp?` | <b>كلمة المرور:</b> <code>${esc(u.password||'—')}</code>`:''}
+    </div>
+    <div class="ms">
+      <div class="mst"><div class="n" style="color:var(--present)">${cnt.present}</div><div class="l">حضور</div></div>
+      <div class="mst"><div class="n" style="color:var(--absent)">${cnt.absent}</div><div class="l">غياب</div></div>
+      <div class="mst"><div class="n" style="color:#9A7B1A">${cnt.excused}</div><div class="l">مستأذن</div></div>
+      <div class="mst"><div class="n">${circles.length}</div><div class="l">الحلقات</div></div>
+      ${u.role==='teacher'?`<div class="mst"><div class="n">${students.length}</div><div class="l">الطلاب</div></div>`:''}
+    </div>
+    <div class="card"><h3>📅 سجل الحضور والغياب (${rows.length})</h3>
+      ${rows.length?`<table><thead><tr><th>التاريخ</th><th>الحالة</th></tr></thead><tbody>
+        ${rows.map(a=>`<tr><td>${fmtD(a.date)}</td><td><span class="badge ${a.status}">${sLbl(a.status)}</span></td></tr>`).join('')}
+      </tbody></table>`:'<div class="empty">لا سجلات حضور لهذا الموظف</div>'}
+    </div>
+    ${circles.length?`<div class="card"><h3>🎯 الحلقات</h3>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">${circles.map(c=>`<span class="badge present" style="cursor:pointer" onclick="closeModal();openCircle(${c.id})">🎯 ${esc(c.name)}</span>`).join('')}</div>
+    </div>`:''}
+    ${u.role==='teacher'&&students.length?`<div class="card"><h3>👦 طلاب المدرس (${students.length})</h3>
+      <table><thead><tr><th>الطالب</th><th>الحلقة</th><th>الموضع</th></tr></thead><tbody>
+      ${students.map(s=>{const c=gC().find(x=>x.id===s.circle_id);return `<tr style="cursor:pointer" onclick="closeModal();openSearchStudent(${s.id})"><td><b>${esc(s.name)}</b></td><td>${c?esc(c.name):'—'}</td><td>${sName(s.cur_surah)}:${s.cur_ayah}</td></tr>`;}).join('')}
+      </tbody></table></div>`:''}`;
   document.getElementById('modalBg').classList.add('show');
 }
 
