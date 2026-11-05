@@ -4486,9 +4486,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   function status(msg,cls){const e=$('qpStatus');e.textContent=msg||'';e.className='qp-status'+(cls?' '+cls:'');}
 
   function urlFor(r,n){
-    if(r.type==='mq')return r.server.replace(/\/?$/,'/')+pad(n)+'.mp3';
-    return `https://cdn.islamic.network/quran/audio-surah/128/${r.id}/${n}.mp3`;
-  }
+  if(r.type==='mq') return `https://${r.server.replace(/^(https?:\/\/)?/, '')}/${pad(n)}.mp3`;
+  return `https://cdn.islamic.network/quran/audio-surah/128/${r.id}/${n}.mp3`;
+}
   function hasSurah(r,n){return !r.surahs||r.surahs.has(n);}
 
   /* ---------- جلب قائمة القراء ---------- */
@@ -4572,7 +4572,10 @@ document.addEventListener('DOMContentLoaded',()=>{
     const n=+$('surahSelect').value;const box=$('surahText');
     box.innerHTML='جارٍ تحميل الآيات…';
     try{
-      const res=await fetch(`https://api.alquran.cloud/v1/surah/${n}`);
+    const res = await fetch(`https://api.alquran.cloud/v1/surah/${n}`, { 
+    method: 'GET', 
+    headers: { 'Accept': 'application/json' } 
+});
       const d=await res.json();
       if(d.code!==200||!d.data||!d.data.ayahs)throw new Error('bad');
       let html=`<span class="sname">سورة ${d.data.name.replace(/^سُورَةُ\s*/,'')}</span>`;
@@ -4667,243 +4670,13 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 </script>
 <script>
-/* ================= زر الصوت قابل للتحريك ================= */
-(function(){
-  const btn=document.getElementById('qpMute');if(!btn)return;
-  const KEY='abbasi_mute_pos_v1';
-  let drag=null,moved=false,swallow=false;
-  function clamp(x,y){
-    const w=btn.offsetWidth||130,h=btn.offsetHeight||42,m=4;
-    return {x:Math.min(Math.max(m,x),Math.max(m,window.innerWidth-w-m)),y:Math.min(Math.max(m,y),Math.max(m,window.innerHeight-h-m))};
-  }
-  function setPos(x,y,save){
-    const p=clamp(x,y);
-    btn.style.left=p.x+'px';btn.style.top=p.y+'px';btn.style.right='auto';btn.style.bottom='auto';
-    if(save){try{localStorage.setItem(KEY,JSON.stringify(p));}catch(e){}}
-  }
-  try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&typeof s.x==='number')setPos(s.x,s.y,false);}catch(e){}
-  btn.addEventListener('pointerdown',e=>{
-    if(e.pointerType==='mouse'&&e.button!==0)return;
-    const r=btn.getBoundingClientRect();
-    drag={dx:e.clientX-r.left,dy:e.clientY-r.top,sx:e.clientX,sy:e.clientY};moved=false;
-    try{btn.setPointerCapture(e.pointerId);}catch(_){}
-  });
-  btn.addEventListener('pointermove',e=>{
-    if(!drag)return;
-    if(!moved&&Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<6)return;
-    moved=true;btn.classList.add('dragging');
-    setPos(e.clientX-drag.dx,e.clientY-drag.dy,false);
-  });
-  function end(e){
-    if(!drag)return;
-    btn.classList.remove('dragging');
-    if(moved){
-      setPos(parseFloat(btn.style.left)||0,parseFloat(btn.style.top)||0,true);
-      swallow=true;setTimeout(()=>{swallow=false;},0);
-    }
-    drag=null;moved=false;
-    try{btn.releasePointerCapture(e.pointerId);}catch(_){}
-  }
-  btn.addEventListener('pointerup',end);
-  btn.addEventListener('pointercancel',end);
-  // منع تنفيذ الكتم/التشغيل عند انتهاء السحب
-  btn.addEventListener('click',e=>{if(swallow){e.stopImmediatePropagation();e.preventDefault();}},true);
-  window.addEventListener('resize',()=>{if(btn.style.left){setPos(parseFloat(btn.style.left)||0,parseFloat(btn.style.top)||0,true);}});
-  window.__resetMutePos=function(){
-    try{localStorage.removeItem(KEY);}catch(e){}
-    btn.style.left='';btn.style.top='';btn.style.right='';btn.style.bottom='';
-    if(typeof toast==='function')toast('✓ أُعيد زر الصوت إلى مكانه');
-  };
-})();
-
-</script>
-
-<script>
-/* ===== أيقونات النظام التفاعلية — كل الأدوار ===== */
-(function(){
-'use strict';
-const EMO=/^\s*((?:[\p{Extended_Pictographic}\u2713\u2717][\uFE0F\u200D\u{1F3FB}-\u{1F3FF}]*)+)/u;
-const HSEL='h2,h3,h4,.adm-hi,.cal-title';
-const role=()=>(typeof cu!=='undefined'&&cu)?cu.role:null;
-const D0=()=>(role()==='admin'&&document.getElementById('ovHero'))?ovDate():today();
-
-function pop(title,html){
-  document.getElementById('modalContent').innerHTML='<h3>'+title+'</h3>'+html+
-    '<div style="margin-top:.65rem"><button type="button" class="btn ghost sm" onclick="closeModal()">إغلاق</button></div>';
-  document.getElementById('modalBg').classList.add('show');
-}
-function goTab(id){
-  if(!cu)return false;
-  const ids=tabsFor(cu.role);if(ids.indexOf(id)<0)return false;
-  if(id==='quran'){openQuran();return true;}
-  if(id==='search'){openGlobalSearch();return true;}
-  closeModal();
-  const a=renderTabs(id);renderView(a);
-  try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){window.scrollTo(0,0);}
-  return true;
-}
-window.icGo=goTab;
-
-/* ---- طيّ/إظهار قسم ---- */
-function headBlock(host,h){let b=h;while(b.parentElement&&b.parentElement!==host)b=b.parentElement;return b;}
-function setCollapsed(host,h,on){
-  if(!h)return;
-  headBlock(host,h).classList.add('ico-hd');
-  host.classList.toggle('ico-collapsed',on);
-}
-function toggle(h){
-  if(h.tagName==='H2'){
-    const secs=[].slice.call(document.querySelectorAll('#mainView .card,#mainView .st-sec')).filter(s=>s.querySelector('h3,h4'));
-    if(!secs.length){toast('لا أقسام لعرضها في هذه الصفحة');return;}
-    const any=secs.some(s=>!s.classList.contains('ico-collapsed'));
-    secs.forEach(s=>{const hh=s.querySelector('h3,h4');if(hh)setCollapsed(s,hh,any);});
-    toast(any?'تم طيّ أقسام الصفحة — اضغط الأيقونة لإظهارها':'✓ تم إظهار جميع الأقسام');
-    return;
-  }
-  const host=h.closest('.card,.st-sec,.adm-sec')||h.parentElement;
-  if(!host||host.id==='mainView'){return;}
-  const on=!host.classList.contains('ico-collapsed');
-  setCollapsed(host,h,on);
-  toast(on?'تم طيّ القسم — اضغط الأيقونة لإظهاره':'✓ تم إظهار القسم');
-}
-
-/* ---- نوافذ المحتوى ---- */
-function posPop(){
-  const s=gS().find(x=>x.id===cu.student_id);if(!s)return false;
-  const c=gC().find(x=>x.id===s.circle_id),t=gU().find(u=>u.id===s.teacher_id);
-  pop('📍 موضعي','<table><tbody><tr><td>السورة</td><td><b>'+esc(sName(s.cur_surah))+'</b></td></tr><tr><td>الآية</td><td>'+s.cur_ayah+
-    '</td></tr><tr><td>الحلقة</td><td>'+esc(c?c.name:'—')+'</td></tr><tr><td>الشيخ</td><td>'+esc(t?t.name:'—')+'</td></tr></tbody></table>');
-  return true;
-}
-function linksPop(){
-  pop('🔗 روابط سريعة','<div class="quick-links">'+
-    '<a class="qlink teams" href="https://teams.microsoft.com/meet/3341939461522598?p=jnoAu1jHpvNSSH6Vvs" target="_blank" rel="noopener">👥 فتح برنامج التيمز</a>'+
-    '<a class="qlink site" href="https://sites.google.com/view/taahod?pli=1&amp;authuser=0" target="_blank" rel="noopener">📝 موقع التحضير</a></div>');
-  return true;
-}
-function quickPop(){
-  if(typeof ovData!=='function')return false;
-  const d=ovData(D0());
-  pop('💡 متابعة سريعة — '+fmtD(d.D),'<div class="dr-sum">'+
-    '<div class="dr-stat"><b>'+d.C.length+'</b><span>حلقة</span></div><div class="dr-stat"><b>'+d.S.length+'</b><span>طالب</span></div>'+
-    '<div class="dr-stat"><b>'+d.sP+'</b><span>موظف حاضر</span></div><div class="dr-stat"><b>'+d.sA+'</b><span>موظف غائب</span></div>'+
-    '<div class="dr-stat"><b>'+d.studP+'</b><span>طالب حاضر</span></div><div class="dr-stat"><b>'+d.studAb+'</b><span>طالب غائب</span></div>'+
-    '<div class="dr-stat"><b>'+d.recs+'</b><span>تسميع</span></div><div class="dr-stat"><b>'+d.pq.length+'</b><span>طلب معلق</span></div></div>'+
-    '<button type="button" class="btn ghost sm" onclick="openDayReport(\''+d.D+'\')">📋 البيانات الكاملة لهذا اليوم</button>');
-  return true;
-}
-function dirPop(){if(typeof dirList!=='function')return false;pop('📢 التوجيهات',dirList(true));return true;}
-function chatPop(){
-  if(typeof chatUnreadTotal!=='function')return false;
-  const n=chatUnreadTotal();
-  pop('💬 الدردشة','<div class="info">'+(n?('لديك <b>'+n+'</b> رسالة غير مقروءة.'):'لا رسائل غير مقروءة.')+'</div>');
-  return true;
-}
-const dashAct=()=>{const r=role();showDt(r==='student'?'myRecs':r==='teacher'?'myStudents':'allStudents');};
-
-/* [نمط النص، الإجراء، الأدوار المسموحة] — يرجع false للانتقال للقاعدة التالية */
-const RULES=[
-  [/موضعي/,posPop,['student']],
-  [/روابط سريعة/,linksPop],
-  [/متابعة سريعة/,quickPop,['admin']],
-  [/لوحة/,dashAct],
-  [/تسميعاتي/,()=>showDt('myRecs'),['student']],
-  [/المستخدمون/,()=>showDt('allStaff'),['admin']],
-  [/حضور الموظفين/,()=>openDayReport(D0()),['admin','supervisor','teacher']],
-  [/حضور الطلاب/,()=>openDayReport(D0()),['admin']],
-  [/^\s*التسميع\s*$/,()=>showDt('tAllRecs'),['admin','supervisor']],
-  [/طلباتي/,()=>showDt('myQ')],
-  [/^\s*واردة/,()=>showDt('incoming'),['admin','supervisor','teacher']],
-  [/كل الطلبات|^\s*الطلبات/,()=>showDt('allReq'),['admin','supervisor','teacher']],
-  [/الاستئذان/,()=>showDt(role()==='student'?'myQ':'allReq')],
-  [/الطلاب حسب الحلقة|^\s*الحلقات/,()=>showDt('allCircles'),['admin','supervisor','teacher']],
-  [/المديرون/,()=>showDt('allAdmins'),['admin']],
-  [/المشرفون/,()=>showDt('allSupervisors'),['admin']],
-  [/المدرسون/,()=>showDt('allTeachers'),['admin','supervisor']],
-  [/^\s*(الطلاب|طلابي)/,()=>showDt(role()==='teacher'?'myStudents':'allStudents'),['admin','supervisor','teacher']],
-  [/^\s*التوجيهات/,dirPop],
-  [/الدردشة/,chatPop]
-];
-
-function act(ic){
-  const h=ic.closest(HSEL)||ic.parentElement;
-  if(h.classList.contains('cal-title')&&typeof calToday==='function'){calToday();toast('📅 عدنا إلى اليوم');return;}
-  if(h.classList.contains('adm-hi')){if(role()==='admin'){openDayReport(D0());return;}}
-  const ctx=(h.textContent||'').replace(ic.textContent,'').trim();
-  const r=role();
-  for(let i=0;i<RULES.length;i++){
-    const R=RULES[i];
-    if(R[0].test(ctx)&&(!R[2]||R[2].indexOf(r)>=0)){
-      try{if(R[1]()!==false)return;}catch(e){console.warn('icon action',e);}
-    }
-  }
-  toggle(h);
-}
-
-/* ---- أيقونات الرأس: الشعار، ساعة الصلاة، المستخدم، التاريخ ---- */
-function aboutPop(){
-  const r=role();if(!r)return;
-  const ids=tabsFor(r);
-  const btns=ids.map(id=>{const L=tabLabel(id,r);return '<button type="button" class="btn ghost sm" onclick="closeModal();icGo(\''+id+'\')">'+(L.i?L.i+' ':'')+esc(L.t)+'</button>';}).join('');
-  let stats='';
-  if(r==='admin'||r==='supervisor')stats='<div class="dr-sum"><div class="dr-stat"><b>'+gC().length+'</b><span>حلقة</span></div><div class="dr-stat"><b>'+gS().length+'</b><span>طالب</span></div><div class="dr-stat"><b>'+gU().filter(u=>u.role==='teacher').length+'</b><span>مدرس</span></div></div>';
-  else if(r==='teacher')stats='<div class="dr-sum"><div class="dr-stat"><b>'+gS().filter(s=>s.teacher_id===cu.id).length+'</b><span>طالب لديك</span></div></div>';
-  pop('📖 منصة العباسي','<div class="info">لإدارة حلقات تحفيظ القرآن الكريم — مرحباً <b>'+esc(cu.name)+'</b> ('+esc(RN[r])+')</div>'+stats+'<div class="ic-pop-tabs">'+btns+'</div>');
-}
-function prayerPop(){
-  const q=s=>document.querySelector(s);
-  const rows=[].slice.call(document.querySelectorAll('#pcPrayers .pc-pr')).map(p=>'<tr><td>'+esc(p.children[0].textContent)+'</td><td dir="ltr" style="text-align:right">'+esc(p.children[1].textContent)+'</td></tr>').join('');
-  pop('🕌 مواقيت الصلاة','<div class="info">'+esc((q('#pcDate')||{}).textContent||'')+' — الصلاة القادمة: <b>'+esc((q('#pcNextName')||{}).textContent||'—')+'</b> بعد <b dir="ltr">'+esc((q('#pcCountdown')||{}).textContent||'')+'</b></div><table><tbody>'+rows+'</tbody></table>');
-}
-function userPop(){
-  if(!cu)return;
-  if(cu.role!=='student'&&typeof openStaffCard==='function'){try{openStaffCard(cu.id);return;}catch(e){}}
-  const s=gS().find(x=>x.id===cu.student_id),c=s?gC().find(x=>x.id===s.circle_id):null,t=s?gU().find(u=>u.id===s.teacher_id):null;
-  pop('👤 '+esc(cu.name),'<table><tbody><tr><td>الدور</td><td>'+esc(RN[cu.role])+'</td></tr><tr><td>اسم المستخدم</td><td dir="ltr" style="text-align:right">'+esc(cu.username||'—')+'</td></tr>'+
-    (s?'<tr><td>الحلقة</td><td>'+esc(c?c.name:'—')+'</td></tr><tr><td>الشيخ</td><td>'+esc(t?t.name:'—')+'</td></tr><tr><td>موضعي</td><td>'+esc(sName(s.cur_surah))+' — الآية '+s.cur_ayah+'</td></tr>':'')+'</tbody></table>');
-}
-
-document.addEventListener('click',function(e){
-  const t=e.target;if(!t||!t.closest)return;
-  const ic=t.closest('.ico');
-  if(ic){e.preventDefault();e.stopPropagation();act(ic);return;}
-  const app=document.getElementById('app');
-  const inApp=app&&app.classList.contains('show');
-  if(t.closest('.pc-ico')){e.preventDefault();prayerPop();return;}
-  if(!inApp)return;
-  if(t.closest('.logo-i')){e.preventDefault();aboutPop();return;}
-  if(t.closest('#userChip')){e.preventDefault();userPop();return;}
-  if(t.closest('#hdrDate')){e.preventDefault();if(goTab('overview')&&role()==='admin'&&typeof calToday==='function')calToday();return;}
-},true);
-document.addEventListener('keydown',function(e){
-  if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.classList&&e.target.classList.contains('ico')){e.preventDefault();act(e.target);}
-});
-
-/* ---- تحويل أول أيقونة في كل عنوان إلى زر تفاعلي ---- */
-function wire(root){
-  root.querySelectorAll(HSEL).forEach(function(h){
-    if(h.dataset.icw)return;h.dataset.icw='1';
-    const w=document.createTreeWalker(h,NodeFilter.SHOW_TEXT);let n;
-    while((n=w.nextNode())){if(n.nodeValue.trim())break;}
-    if(!n)return;
-    const m=EMO.exec(n.nodeValue);if(!m)return;
-    const ic=document.createElement('span');
-    ic.className='ico';ic.setAttribute('role','button');ic.tabIndex=0;ic.title='اضغط لعرض المحتوى';ic.textContent=m[1];
-    n.nodeValue=n.nodeValue.slice(m[0].length);
-    n.parentNode.insertBefore(ic,n);
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { scope: './' })
+      .then(r => console.log('✅ SW registered successfully', r.scope))
+      .catch(e => console.warn('❌ SW failed', e));
   });
 }
-function boot(){
-  const mv=document.getElementById('mainView');if(!mv)return;
-  let q=false;
-  new MutationObserver(function(){if(!q){q=true;requestAnimationFrame(function(){q=false;wire(mv);});}}).observe(mv,{childList:true,subtree:true});
-  wire(mv);
-  ['logo-i','pc-ico'].forEach(function(c){const el=document.querySelector('.'+c);if(el){el.setAttribute('role','button');el.tabIndex=0;el.title=c==='pc-ico'?'مواقيت الصلاة':'عن المنصة والتنقل السريع';}});
-  const uc=document.getElementById('userChip');if(uc){uc.setAttribute('role','button');uc.title='بطاقتي';}
-  const hd=document.getElementById('hdrDate');if(hd){hd.setAttribute('role','button');hd.title='الذهاب إلى نظرة عامة اليوم';}
-}
-boot();
-})();
 </script>
 </body>
 </html>
