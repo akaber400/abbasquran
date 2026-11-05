@@ -1,4 +1,4 @@
-const VERSION = 'v2'; 
+const VERSION = 'v3'; 
 const VERSION = 'abbasi-v1.0.0';
 const SHELL_CACHE = VERSION + '-shell';
 const RUNTIME_CACHE = VERSION + '-runtime';
