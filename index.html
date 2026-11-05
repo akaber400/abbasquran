@@ -144,6 +144,11 @@ font-size:0.5938rem;font-weight:500;flex:1;text-align:center;user-select:none}
 .badge.excused,.badge.good,.badge.pending{background:#FBF3DD;color:#9A7B1A}
 .badge.verygood{background:#D4E8E0;color:var(--green)}
 .badge.repeat{background:#E8D4D4;color:#7A2E2E}
+.num-link{background:none;border:none;font-family:inherit;font-size:0.6875rem;font-weight:700;cursor:pointer;
+  padding:1px 0.375rem;border-radius:0.3rem;min-width:1.35rem;text-align:center;line-height:1.5}
+.num-link.present{color:var(--present);background:#E6F2EE}
+.num-link.absent{color:var(--absent);background:#FBE9E9}
+.num-link:hover{filter:brightness(.94);text-decoration:underline}
 .mb{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;
 justify-content:center;z-index:400;padding:0.75rem}
 .mb.show{display:flex}
@@ -567,6 +572,43 @@ background:linear-gradient(160deg,var(--deep),var(--deep2));padding:.6rem;box-sh
   .chat-msgs{max-height:44vh}
 }
 
+/* ================= شاشة الوداع ================= */
+.bye-screen{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;padding:1rem;
+  background:radial-gradient(circle at 50% 35%,rgba(232,203,107,.2),transparent 38%),
+  linear-gradient(135deg,var(--deep),var(--green) 55%,var(--deep2));color:#fff;text-align:center;overflow:hidden}
+.bye-screen.show{display:flex;animation:byeFade .4s ease both}
+.bye-screen::before,.bye-screen::after{content:'';position:absolute;border-radius:50%;filter:blur(2px);pointer-events:none}
+.bye-screen::before{width:22rem;height:22rem;border:1px solid rgba(232,203,107,.18);
+  box-shadow:0 0 0 2.5rem rgba(232,203,107,.045),0 0 0 5rem rgba(232,203,107,.03);animation:byePulse 5s ease-in-out infinite}
+.bye-screen::after{width:9rem;height:9rem;background:rgba(232,203,107,.07);top:12%;left:12%;animation:byeFloat 6s ease-in-out infinite}
+.bye-card{position:relative;z-index:1;max-width:31rem;width:100%;padding:2.2rem 1.4rem 1.5rem;border-radius:1.4rem;
+  background:rgba(255,255,255,.075);border:1px solid rgba(232,203,107,.45);
+  box-shadow:0 2rem 5rem rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);overflow:hidden;animation:byeRise .5s .05s ease both}
+.bye-card::before{content:'';position:absolute;inset:-55%;z-index:-1;
+  background:conic-gradient(from 0deg,transparent,rgba(232,203,107,.18),transparent 28%,rgba(232,203,107,.1),transparent 55%);
+  animation:byeSpin 16s linear infinite}
+.bye-ring{width:6rem;height:6rem;margin:0 auto 1rem;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--gold-l);background:rgba(232,203,107,.13);color:var(--gold-l);
+  box-shadow:0 0 0 .7rem rgba(232,203,107,.06),0 0 2.5rem rgba(232,203,107,.28);animation:byeFloat 3.2s ease-in-out infinite}
+.bye-ring svg{width:2.8rem;height:2.8rem;display:block}
+.bye-kicker{font-size:.64rem;letter-spacing:.34em;color:var(--gold-l);opacity:.9;margin-bottom:.35rem}
+.bye-card h2{font-family:'Amiri',serif;font-size:1.55rem;line-height:1.6;color:#fff;margin:0 0 .45rem;
+  text-shadow:0 2px 16px rgba(0,0,0,.4)}
+.bye-card p{font-size:.78rem;color:rgba(255,255,255,.78);margin:0 0 1.1rem}
+.bye-card .btn{background:linear-gradient(135deg,var(--gold-l),var(--gold));color:#10382B;border:none;
+  box-shadow:0 .5rem 1.4rem rgba(0,0,0,.28)}
+.bye-card .btn:hover{filter:brightness(1.06)}
+.bye-note{font-size:.62rem;color:rgba(255,255,255,.62);margin-top:.85rem}
+.bye-note b{color:var(--gold-l)}
+@keyframes byeFade{from{opacity:0}to{opacity:1}}
+@keyframes byeRise{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes byeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes byeSpin{to{transform:rotate(360deg)}}
+@keyframes byePulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.06);opacity:.45}}
+@media(max-width:420px){.bye-ring{width:5rem;height:5rem}.bye-card h2{font-size:1.3rem}}
+@media print{.bye-screen{display:none!important}}
+
 /* ================= الطباعة ================= */
 @media print{
   @page{size:A4 landscape;margin:8mm}
@@ -690,7 +732,6 @@ background:linear-gradient(160deg,var(--deep),var(--deep2));padding:.6rem;box-sh
   <div class="logo"><div class="logo-i">📖</div>
     <div><h1 class="brand-gold">منصة العباسي</h1><p>لإدارة حلقات تحفيظ القرآن الكريم</p><div class="hn" id="hdrName">—</div></div></div>
   <div class="hd">
-    <button class="btn sm ghost" id="globalSearchBtn" style="color:#fff;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.6)" onclick="openGlobalSearch()">🔍 بحث شامل</button>
     <span id="hdrDate">—</span>
     <span class="uc" id="userChip">—</span>
     <button class="btn sm ghost" style="color:#fff;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.6)" onclick="doLogout()">خروج</button>
@@ -698,6 +739,24 @@ background:linear-gradient(160deg,var(--deep),var(--deep2));padding:.6rem;box-sh
 </header>
 <div class="tabs" id="tabsNav"></div>
 <main id="mainView"></main>
+</div>
+
+<!-- شاشة وداع الخروج -->
+<div id="byeScreen" class="bye-screen" onclick="hideByeScreen()">
+  <div class="bye-card" onclick="event.stopPropagation()">
+    <div class="bye-ring" aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 38h34M10 38V23h28v15M14 23v-3.5c0-5.5 4.5-10 10-10s10 4.5 10 10V23"/>
+        <path d="M24 12V8M20.5 38V29a3.5 3.5 0 0 1 7 0v9M6 41h36"/>
+        <path d="M17 38v-7M31 38v-7"/>
+      </svg>
+    </div>
+    <div class="bye-kicker">منصة العباسي</div>
+    <h2>نراك قريباً على خير إن شاء الله</h2>
+    <p>تم تسجيل الخروج بأمان، حفظك الله ورعاك.</p>
+    <button type="button" class="btn" onclick="event.stopPropagation();hideByeScreen()">🔐 العودة إلى تسجيل الدخول</button>
+    <div class="bye-note">سيتم الرجوع تلقائياً خلال <b id="byeCount">4</b> ثوانٍ…</div>
+  </div>
 </div>
 
 <div class="sb" id="sheetBg" onclick="closeSheet()"></div>
@@ -932,16 +991,6 @@ function statusOn(sid,d){
   if(recOnDate(sid,d))return 'present';
   const a=gA().find(x=>x.student_id===sid&&x.date===d);
   return a?a.status:'absent';
-}
-function dayAttendanceLists(list,d){
-  const p=list.filter(s=>statusOn(s.id,d)==='present');
-  const a=list.filter(s=>isAbsStatus(statusOn(s.id,d)));
-  const chip=(arr,cls)=>arr.length?arr.map(s=>`<span class="badge ${cls}" style="margin:1px;display:inline-block">${esc(s.name)}</span>`).join(''):'<span class="empty" style="display:inline-block;padding:3px 8px">لا يوجد</span>';
-  return `<div class="card"><h3>📅 حضور اليوم — ${fmtD(d)}</h3>
-    <div class="fg">
-      <div><h3 style="font-size:0.75rem;color:var(--present)">✓ قائمة الحضور (${p.length})</h3><div>${chip(p,'present')}</div></div>
-      <div><h3 style="font-size:0.75rem;color:var(--absent)">✗ قائمة الغياب (${a.length})</h3><div>${chip(a,'absent')}</div></div>
-    </div></div>`;
 }
 function circleAbsenceStats(cid,f,t){
   const key='c:'+cid+':'+(f||'')+':'+(t||'');
@@ -1427,13 +1476,13 @@ const TABDEF={
   admins:{i:'👑',t:'المديرون'},supervisors:{i:'👔',t:'المشرفون'},teachers:{i:'👨‍🏫',t:'المدرسون'},
   circles:{i:'🎯',t:'الحلقات'},students:{i:'👦',t:{teacher:'طلابي',d:'الطلاب'}},
   reports:{i:'📈',t:{teacher:'تقاريري',d:'التقارير'}},staff:{i:'✋',t:'الموظفون'},
-  chat:{i:'💬',t:'الدردشة'},
-  quran:{i:'📖',t:'المصحف'},requests:{i:'📝',t:'الاستئذان'},directives:{i:'📢',t:'التوجيهات'},settings:{i:'⚙️',t:'الإعدادات'}};
+  quran:{i:'📖',t:'المصحف'},requests:{i:'📝',t:'الاستئذان'},directives:{i:'📢',t:'التوجيهات'},
+  search:{i:'🔍',t:'البحث الشامل'},settings:{i:'⚙️',t:'الإعدادات'},chat:{i:'💬',t:'الدردشة'}};
 const ROLE_TABS={
-  admin:['overview','admins','supervisors','teachers','circles','students','reports','staff','chat','requests','directives','quran','settings'],
-  supervisor:['overview','teachers','circles','students','reports','staff','chat','requests','directives','quran'],
-  teacher:['overview','circles','students','reports','staff','chat','requests','directives','quran'],
-  student:['overview','chat','quran','requests','directives']};
+  admin:['overview','admins','supervisors','teachers','circles','students','reports','staff','quran','settings','requests','directives','search','chat'],
+  supervisor:['overview','teachers','circles','students','reports','staff','quran','requests','directives','search','chat'],
+  teacher:['overview','circles','students','reports','staff','quran','requests','directives','search','chat'],
+  student:['overview','quran','requests','directives','chat']};
 function tabLabel(id,role,c){
   const d=TABDEF[id],o=((c||CFG).tabs||{})[id]||{};
   const base=typeof d.t==='string'?d.t:(d.t[role]||d.t.d||'');
@@ -1441,7 +1490,7 @@ function tabLabel(id,role,c){
 }
 function tabsFor(role){
   return ROLE_TABS[role].filter(id=>{
-    if(id==='overview'||id==='settings')return true;
+    if(id==='overview'||id==='settings'||id==='search')return true;
     if((CFG.tabs[id]||{}).hide)return false;
     if(role==='admin')return true;
     return can('tab_'+id);
@@ -1497,7 +1546,7 @@ function renderSettings(){
   if(!DRAFT)DRAFT=cloneJ(CFG);
   const d=DRAFT,t=d.theme,auto=d.fontMode==='auto';
   const presets=THEME_PRESETS.map((p,i)=>`<button type="button" class="st-preset" onclick="stPreset(${i})"><span class="st-dot" style="background:${p.green}"></span><span class="st-dot" style="background:${p.gold}"></span>${p.n}</button>`).join('');
-  const tabRows=Object.keys(TABDEF).map(id=>{
+  const tabRows=Object.keys(TABDEF).filter(id=>id!=='search').map(id=>{
     const D=TABDEF[id],o=d.tabs[id]||{},locked=(id==='overview'||id==='settings');
     const base=tabLabel(id,'admin',{tabs:{}}).t;
     return `<tr><td>${D.i} ${esc(base)}</td>
@@ -1634,16 +1683,33 @@ async function doLogin(){
     cu=f;saveSession(f);enterApp();
   }catch(e){toast('خطأ الاتصال: '+e.message,true);btn.disabled=false;btn.textContent='🔐 تسجيل الدخول';}
 }
-function doLogout(){if(!confirm('خروج؟'))return;chatLeave();cu=null;clearSession();quranHome();DRAFT=null;applyAll(CFG);
+let _byeTimer=null,_byeInt=null;
+function showByeScreen(){
+  const b=document.getElementById('byeScreen');if(!b)return;
+  const n0=document.getElementById('byeCount');if(n0)n0.textContent='4';
+  clearInterval(_byeInt);clearTimeout(_byeTimer);
+  b.classList.add('show');
+  const login=document.getElementById('loginWrap');if(login)login.style.display='none';
+  let n=4;
+  _byeInt=setInterval(()=>{n--;const el=document.getElementById('byeCount');if(el)el.textContent=Math.max(0,n);},1000);
+  _byeTimer=setTimeout(hideByeScreen,4200);
+}
+function hideByeScreen(){
+  clearInterval(_byeInt);clearTimeout(_byeTimer);
+  const b=document.getElementById('byeScreen');if(b)b.classList.remove('show');
+  const login=document.getElementById('loginWrap');if(login)login.style.display='flex';
+}
+function doLogout(){
+  chatLeave();cu=null;clearSession();quranHome();DRAFT=null;applyAll(CFG);
   document.getElementById('app').classList.remove('show');
-  document.getElementById('loginWrap').style.display='flex';
-  document.getElementById('loginUser').value='';document.getElementById('loginPass').value='';}
+  document.getElementById('loginUser').value='';document.getElementById('loginPass').value='';
+  showByeScreen();
+}
 const RN={admin:'المدير',supervisor:'المشرف',teacher:'المدرس',student:'الطالب'};
 function enterApp(view){
   document.getElementById('loginWrap').style.display='none';
   document.getElementById('app').classList.add('show');
   document.getElementById('userChip').textContent='👤 '+cu.name+' ('+RN[cu.role]+')';
-  const gsb=document.getElementById('globalSearchBtn');if(gsb)gsb.style.display=cu.role==='student'?'none':'';
   document.getElementById('hdrDate').textContent=fmtD(today());
   document.getElementById('hdrName').textContent=cu.name;
   const v0=renderTabs(view||'overview');renderView(v0);
@@ -1654,8 +1720,10 @@ function enterApp(view){
 function renderTabs(active){
   const r=cu.role;const ids=tabsFor(r);
   if(!ids.includes(active))active='overview';
-  document.getElementById('tabsNav').innerHTML=ids.map(id=>{const L=tabLabel(id,r);
-    return `<button class="tab ${id===active?'active':''}" title="${esc(L.t)}" onclick="${id==='quran'?'openQuran()':`renderView('${id}',this)`}">${L.i?`<span class="ti">${L.i}</span>`:''}<span class="tt">${esc(L.t)}${id==='chat'?'<span class="tab-badge" id="chatTabBadge"></span>':''}</span></button>`;}).join('');
+  document.getElementById('tabsNav').innerHTML=ids.map(id=>{
+    const L=tabLabel(id,r);
+    const act=id==='quran'?'openQuran()':id==='search'?'openGlobalSearch()':`renderView('${id}',this)`;
+    return `<button class="tab ${id===active&&id!=='search'?'active':''}" title="${esc(L.t)}" onclick="${act}">${L.i?`<span class="ti">${L.i}</span>`:''}<span class="tt">${esc(L.t)}${id==='chat'?'<span class="tab-badge" id="chatTabBadge"></span>':''}</span></button>`;}).join('');
   updateChatBadge();
   return active;
 }
@@ -1992,16 +2060,17 @@ function openCircle(id){
     <b>المدرس:</b> ${t?esc(t.name):'—'} | <b>المشرف:</b> ${s?esc(s.name):'—'}<br>
     <b>الجدول:</b> ${esc(c.schedule||'—')} | <b>المكان:</b> ${esc(c.location||'—')}</div>
     ${students.length?`<div class="card"><h3>👦 الطلاب (${students.length})</h3>
-      <table><thead><tr><th>الاسم</th><th>الموضع</th><th>تسميعات</th><th>حضور اليوم</th><th>الغياب</th><th>إجراءات</th></tr></thead>
+      <table><thead><tr><th>الاسم</th><th>الموضع</th><th>تسميعات</th><th>حضور اليوم</th><th>الحضور</th><th>الغياب</th><th>إجراءات</th></tr></thead>
       <tbody>${students.map(st=>{
         const sr=R.filter(r=>r.student_id===st.id);
         const stt=statusOn(st.id,T);
-        const nAbs=abs.per[st.id]||0;
+        const att=studentAttendanceStats(st.id);
         return `<tr>
         <td><b>${esc(st.name)}</b></td><td>${sName(st.cur_surah)}:${st.cur_ayah}</td>
         <td>${sr.length}</td>
         <td><span class="badge ${stt}">${sLbl(stt)}</span></td>
-        <td><span class="abs-chip ${nAbs?'':'ok'}" title="الغياب المحتسب: لم يسمّع في أيام الحلقة">✗ ${nAbs}</span></td>
+        <td><button class="num-link present" title="أيام الحضور — انقر للتفاصيل" onclick="openAttendanceDetails(${st.id},'present')">${att.present}</button></td>
+        <td><button class="num-link absent" title="أيام الغياب — انقر للتفاصيل" onclick="openAttendanceDetails(${st.id},'absent')">${att.absent}</button></td>
         <td><button class="btn gold sm" title="تقرير الطالب" onclick="closeModal();openStudentReport(${st.id},today().slice(0,7)+'-01',today())">📖</button>
         ${can('manage_students')?`<button class="btn sm" onclick="closeModal();editStudent(${st.id})">✏️</button>`:''}
         ${canPromote?`<button class="btn promote sm" title="ترقية إلى مرحلة أعلى" onclick="promoteStudent(${st.id})">⬆️</button>`:''}</td>
@@ -2101,20 +2170,21 @@ function renderStudents(){
       const t=U.find(u=>u.id===s.teacher_id),c=C.find(x=>x.id===s.circle_id);
       const acc=U.find(u=>u.role==='student'&&u.student_id===s.id);
       const lr=R.filter(r=>r.student_id===s.id).sort((a,b)=>b.date.localeCompare(a.date))[0];
-      const nAbs=studentAbsenceStats(s.id).count;
+      const att=studentAttendanceStats(s.id);
       const stt=statusOn(s.id,T);
       return `<tr>${numbered?`<td>${i+1}</td>`:''}<td><b>${esc(s.name)}</b></td>
       <td>${c?esc(c.name):'—'}</td><td>${t?esc(t.name):'—'}</td>
       <td>${lr?`${fmtS(lr.date)} <span class="badge ${lr.grade}">${gLbl(lr.grade)}</span>`:'—'}</td>
       <td><span class="badge ${stt}">${sLbl(stt)}</span></td>
-      <td><span class="abs-chip ${nAbs?'':'ok'}" title="الغياب المحتسب: لم يسمّع في أيام الحلقة">✗ ${nAbs}</span></td>
+      <td><button class="num-link present" title="أيام الحضور — انقر للتفاصيل" onclick="openAttendanceDetails(${s.id},'present')">${att.present}</button></td>
+      <td><button class="num-link absent" title="أيام الغياب — انقر للتفاصيل" onclick="openAttendanceDetails(${s.id},'absent')">${att.absent}</button></td>
       <td><code dir="ltr">${acc?acc.username:'—'}</code></td>${pw?`<td><code>${acc?acc.password:'—'}</code></td>`:''}
       <td><button class="btn gold sm" title="تقرير الطالب" onclick="openStudentReport(${s.id},today().slice(0,7)+'-01',today())">📖</button>
       ${can('manage_students')?`<button class="btn sm" onclick="editStudent(${s.id})">✏️</button>`:''}
       ${canPromote?`<button class="btn promote sm" title="ترقية إلى مرحلة أعلى" onclick="promoteStudent(${s.id})">⬆️</button>`:''}
       ${can('manage_students')?`<button class="btn danger sm" onclick="delStudent(${s.id})">🗑</button>`:''}</td></tr>`;
     }).join('');
-    const tableFor=(list,numbered)=>list.length?`<table><thead><tr>${numbered?'<th>#</th>':''}<th>الاسم</th><th>الحلقة</th><th>الشيخ</th><th>آخر تسميع</th><th>حضور اليوم</th><th>الغياب</th><th>المستخدم</th>${pw?'<th>المرور</th>':''}<th>إجراءات</th></tr></thead>
+    const tableFor=(list,numbered)=>list.length?`<table><thead><tr>${numbered?'<th>#</th>':''}<th>الاسم</th><th>الحلقة</th><th>الشيخ</th><th>آخر تسميع</th><th>حضور اليوم</th><th>الحضور</th><th>الغياب</th><th>المستخدم</th>${pw?'<th>المرور</th>':''}<th>إجراءات</th></tr></thead>
       <tbody>${rowsFor(list,numbered)}</tbody></table>`:'<div class="empty">لا طلاب</div>';
     let groups='';
     if(grouped){
@@ -2140,7 +2210,6 @@ function renderStudents(){
       if(!C.length&&!un.length)groups='<div class="empty">لا حلقات ولا طلاب</div>';
     }
     return `<h2>👦 الطلاب (${S.length})</h2>
-      ${dayAttendanceLists(S,T)}
       <div class="card">
       <div class="ab2"><h3>📋 القائمة</h3>
       <div class="acts">
@@ -2163,7 +2232,6 @@ function renderStudents(){
   const sel=window.__selDate,isT=sel===T;
   const getAtt=(id)=>statusOn(id,sel);
   return `<h2>👦 طلابي (${S.length})</h2>
-    ${dayAttendanceLists(S,T)}
     <div class="card" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
     <label style="margin:0">📅 التاريخ:</label>
     <input type="date" value="${sel}" style="width:auto;padding:5px" onchange="window.__selDate=this.value;renderView('students')">
@@ -2175,9 +2243,9 @@ function renderStudents(){
       const st=getAtt(s.id);
       const onDate=gR().filter(x=>x.student_id===s.id&&x.date===sel);
       const prev=gR().filter(x=>x.student_id===s.id&&x.date<sel).sort((a,b)=>b.date.localeCompare(a.date))[0];
-      const nAbs=studentAbsenceStats(s.id).count;
+      const att=studentAttendanceStats(s.id);
       return `<div class="sr ${st}">
-      <div class="sn" onclick="openSheet(${s.id})">${s.name}<small>${sName(s.cur_surah)}:${s.cur_ayah} • <span class="abs-chip ${nAbs?'':'ok'}">✗ ${nAbs}</span></small></div>
+      <div class="sn" onclick="openSheet(${s.id})">${s.name}<small>${sName(s.cur_surah)}:${s.cur_ayah} • <button class="num-link present" title="أيام الحضور — انقر للتفاصيل" onclick="event.stopPropagation();openAttendanceDetails(${s.id},'present')">${att.present}</button> حضور • <button class="num-link absent" title="أيام الغياب — انقر للتفاصيل" onclick="event.stopPropagation();openAttendanceDetails(${s.id},'absent')">${att.absent}</button> غياب</small></div>
       <div class="ab">${['present','absent','excused','disconnected'].map(v=>{
         const lbl={present:'حاضر',absent:'غائب',excused:'مستأذن',disconnected:'منقطع'}[v];
         const cls={present:'p',absent:'a',excused:'e',disconnected:'d'}[v];
@@ -3067,6 +3135,40 @@ function renderReportBody(){
     </div>`;
 }
 
+function openAttendanceDetails(sid,kind){
+  const s=gS().find(x=>x.id===sid);if(!s)return;
+  const all=_studentSessionDates(sid);
+  const dates=all.filter(d=>{
+    const st=statusOn(sid,d);
+    return kind==='present'?st==='present':isAbsStatus(st);
+  }).sort((a,b)=>String(b).localeCompare(String(a)));
+  const st=studentAttendanceStats(sid);
+  const title=kind==='present'?'سجل الحضور':'سجل الغياب';
+  const rows=dates.length?dates.map(d=>{
+    const status=statusOn(sid,d);
+    const rec=gR().filter(r=>r.student_id===sid&&r.date===d);
+    const recTxt=rec.length?rec.map(r=>`${sName(r.from_surah)}:${r.from_ayah} ← ${sName(r.to_surah)}:${r.to_ayah}`).join('<br>'):'—';
+    return `<tr><td>${fmtD(d)}</td><td><span class="badge ${status}">${sLbl(status)}</span></td><td>${recTxt}</td></tr>`;
+  }).join(''):`<tr><td colspan="3" class="empty">لا توجد أيام مسجّلة</td></tr>`;
+  const from=all.length?all[0]:today();
+  document.getElementById('modalContent').innerHTML=`
+    <h3>${kind==='present'?'✓':'✗'} ${title} — ${esc(s.name)}</h3>
+    <div class="ms">
+      <div class="mst"><div class="n" style="color:var(--present)">${st.present}</div><div class="l">حضور</div></div>
+      <div class="mst"><div class="n" style="color:var(--absent)">${st.absent}</div><div class="l">غياب</div></div>
+      <div class="mst"><div class="n" style="color:var(--excused)">${st.excused}</div><div class="l">مستأذن</div></div>
+      <div class="mst"><div class="n">${all.length}</div><div class="l">أيام الحلقة</div></div>
+    </div>
+    <div class="info" style="margin-bottom:8px">عدد أيام ${kind==='present'?'الحضور':'الغياب'}: <b>${dates.length}</b> — اضغط على «التقرير الكامل» لعرض كل التفاصيل والتسميعات.</div>
+    <div class="card" style="box-shadow:none">
+    <table><thead><tr><th>التاريخ</th><th>الحالة</th><th>التسميع</th></tr></thead><tbody>${rows}</tbody></table>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn gold sm" onclick="openStudentReport(${sid},'${from}','${today()}')">📖 التقرير الكامل</button>
+      <button class="btn ghost sm" onclick="closeModal()">إغلاق</button>
+    </div>`;
+  document.getElementById('modalBg').classList.add('show');
+}
 function openStudentReport(sid,from,to){
   const s=gS().find(x=>x.id===sid);if(!s)return;
   const U=gU(),C=gC(),R=gR(),A=gA();
@@ -3145,34 +3247,63 @@ function gsNorm(v){
   s=s.replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
   return s.replace(/[\s\-_()+]/g,'');
 }
-function gsPersonRows(q){
+let gsMode='name';
+const GS_MODES={
+  name:{icon:'👤',label:'الاسم',ph:'اكتب اسم الشخص…'},
+  nid:{icon:'🆔',label:'الرقم الشخصي',ph:'اكتب الرقم الشخصي…'},
+  phone:{icon:'📱',label:'الجوال',ph:'اكتب رقم الجوال…'}
+};
+function gsPersonRows(q,mode){
   const nq=gsNorm(q);
+  const m=GS_MODES[mode]?mode:(GS_MODES[gsMode]?gsMode:'name');
   if(nq.length<2)return {users:[],students:[]};
   const U=gU(),S=gS();
-  const users=U.filter(u=>u.role!=='student'&&[u.name,u.national_id,u.phone,u.email,u.username].some(v=>gsNorm(v).includes(nq)));
+  const match=vals=>vals.some(v=>gsNorm(v).includes(nq));
+  const users=U.filter(u=>{
+    if(u.role==='student')return false;
+    if(m==='nid')return match([u.national_id]);
+    if(m==='phone')return match([u.phone]);
+    return match([u.name]);
+  });
   const students=S.filter(s=>{
     const a=U.find(u=>u.role==='student'&&u.student_id===s.id);
-    return [s.name,s.national_id,s.parent,s.email,s.phone,a&&a.username,a&&a.phone,a&&a.national_id].some(v=>gsNorm(v).includes(nq));
+    if(m==='nid')return match([s.national_id,a&&a.national_id]);
+    if(m==='phone')return match([s.parent,s.phone,a&&a.phone]);
+    return match([s.name]);
   });
   return {users,students};
 }
+function gsSetMode(mode){
+  if(!GS_MODES[mode])return;
+  gsMode=mode;
+  document.querySelectorAll('#gsModes .ptb').forEach(b=>b.classList.toggle('active',b.dataset.m===mode));
+  const q=document.getElementById('gsQ');
+  if(q){q.value='';q.placeholder=GS_MODES[mode].ph;q.focus();}
+  const box=document.getElementById('gsResults');
+  if(box)box.innerHTML=`<div class="empty">${GS_MODES[mode].icon} ابحث بحسب ${GS_MODES[mode].label}… اكتب حرفين على الأقل.</div>`;
+}
 function openGlobalSearch(){
+  gsMode='name';
+  const modes=Object.entries(GS_MODES).map(([k,v])=>
+    `<button type="button" class="ptb ${k==='name'?'active':''}" data-m="${k}" onclick="gsSetMode('${k}')">${v.icon} ${v.label}</button>`).join('');
   document.getElementById('modalContent').innerHTML=`
     <h3>🔍 البحث الشامل</h3>
-    <div class="info">ابحث بالاسم أو الرقم الشخصي أو رقم الجوال. تظهر البطاقة الكاملة للموظف، وللطالب كشف الحضور والغياب والتسميع.</div>
-    <div class="gs-wrap"><input id="gsQ" placeholder="اكتب الاسم أو الرقم الشخصي أو رقم الجوال…" oninput="gsRun()" autocomplete="off">
+    <div class="info">اختر نوع البحث: بالاسم، أو الرقم الشخصي، أو رقم الجوال. تظهر البطاقة الكاملة للموظف، وللطالب كشف الحضور والغياب والتسميع.</div>
+    <div class="pt" id="gsModes">${modes}</div>
+    <div class="gs-wrap"><input id="gsQ" placeholder="${GS_MODES.name.ph}" oninput="gsRun()" autocomplete="off">
     <button class="btn" onclick="gsRun()">🔍 بحث</button></div>
-    <div id="gsResults"><div class="empty">اكتب حرفين على الأقل للبحث…</div></div>`;
+    <div id="gsResults"><div class="empty">👤 ابحث بحسب الاسم… اكتب حرفين على الأقل.</div></div>`;
   document.getElementById('modalBg').classList.add('show');
   setTimeout(()=>{const i=document.getElementById('gsQ');if(i)i.focus();},80);
 }
 function gsRun(){
   const q=(document.getElementById('gsQ')||{}).value||'';
   const box=document.getElementById('gsResults');if(!box)return;
-  if(gsNorm(q).length<2){box.innerHTML='<div class="empty">اكتب حرفين على الأقل للبحث…</div>';return;}
-  const {users,students}=gsPersonRows(q);
+  const m=GS_MODES[gsMode]?gsMode:'name';
+  if(gsNorm(q).length<2){box.innerHTML=`<div class="empty">${GS_MODES[m].icon} ابحث بحسب ${GS_MODES[m].label}… اكتب حرفين على الأقل.</div>`;return;}
+  const {users,students}=gsPersonRows(q,m);
   const total=users.length+students.length;
-  let h=`<div class="gs-count">النتائج: ${total}</div>`;
+  let h=`<div class="gs-count">النتائج: ${total} <span style="color:var(--green)">• ${GS_MODES[m].icon} ${GS_MODES[m].label}</span></div>`;
   if(!total){box.innerHTML=h+'<div class="empty">لا نتائج مطابقة</div>';return;}
   if(users.length){
     h+=`<div class="gs-section">👥 الإدارة والموظفون (${users.length})</div>`;
