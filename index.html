@@ -1176,9 +1176,11 @@ pre{max-width:100%;overflow-x:auto}
 <button id="qpMute" class="qp-mute" type="button" hidden aria-pressed="false" aria-label="كتم الصوت">🔊 كتم الصوت</button>
 
 <script>
-/* ================= SUPABASE CONFIG ================= */
-const SUPABASE_URL = 'https://fnclxuymsusahimmofst.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_kl6EePpmJDDNfQhsn8XtuA_rxp7KBlr';
+/* ================= SUPABASE CONFIG =================
+   الرابط يكون بالشكل: https://xxxx.supabase.co (بدون /rest/v1)
+   المفتاح: anon public (يبدأ بـ eyJ...) أو publishable (يبدأ بـ sb_publishable_) من Project Settings ← API */
+const SUPABASE_URL = 'https://vymeurvuebtyqzktkptx.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ5bWV1cnZ1ZWJ0eXF6a3RrcHR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5Mzk1NTksImV4cCI6MjEwODUxNTU1OX0.6O21WoRESGVJQKWttmeWK8NyIaqmrerC_PpS68Y8pS8';
 
 const sb = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
@@ -1186,14 +1188,24 @@ const sb = (window.supabase && window.supabase.createClient) ? window.supabase.c
 const CACHE = {users:null,students:null,circles:null,recitations:null,attendance:null,directives:null,requests:null,staff:null};
 let _ABS_CACHE={};
 
+function explainDbError(err,table){
+  const m=String((err&&(err.message||err.details))||'');const c=String((err&&err.code)||'');
+  const t=table?(' «'+table+'»'):'';
+  if(c==='PGRST205'||c==='42P01'||/could not find the table|does not exist/i.test(m))return 'الجدول'+t+' غير موجود في قاعدة Supabase — شغّل ملف schema.sql في SQL Editor';
+  if(c==='42501'||/permission denied|row-level security|violates row-level/i.test(m))return 'لا توجد صلاحية قراءة'+t+' — فعّل السياسات (RLS) كما في ملف schema.sql';
+  if(/invalid api key|jwt|apikey|unauthorized/i.test(m)||c==='PGRST301'||String(err&&err.status)==='401')return 'مفتاح Supabase غير صالح — تحقق من SUPABASE_ANON_KEY';
+  if(/failed to fetch|networkerror|load failed|fetch/i.test(m))return 'تعذّر الوصول إلى '+SUPABASE_URL+' — تحقق من الرابط والاتصال، وأن المشروع غير متوقف (Paused)';
+  return m||'تعذّر الاتصال بقاعدة البيانات';
+}
 async function loadAll(strict){
   if(!sb)throw new Error('تعذّر تحميل مكتبة قاعدة البيانات، تحقق من الاتصال بالإنترنت');
   const tables=['users','students','circles','recitations','attendance','directives','requests','staff_attendance'];
   const res=await Promise.all(tables.map(t=>sb.from(t).select('*')));
-  const bad=res.find(r=>!r||r.error);
+  const badIdx=res.findIndex(r=>!r||r.error);
+  const bad=badIdx>=0?res[badIdx]:null;
   if(bad){
     // عند فشل الجلب لا نفرّغ البيانات الموجودة؛ ونُظهر الخطأ للمستدعي عند الطلب
-    if(strict)throw new Error((bad&&bad.error&&bad.error.message)||'تعذّر الاتصال بقاعدة البيانات');
+    if(strict)throw new Error(explainDbError(bad&&bad.error,tables[badIdx]));
     console.warn('loadAll:',bad&&bad.error);
     return false;
   }
